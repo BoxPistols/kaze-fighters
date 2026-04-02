@@ -45,45 +45,49 @@
   .touch-area { pointer-events: auto; }
   .dpad {
     position: relative;
-    width: 140px; height: 140px;
-    margin-bottom: 10px;
-    margin-left: 10px;
+    width: clamp(130px, 25vw, 180px);
+    height: clamp(130px, 25vw, 180px);
+    margin-bottom: env(safe-area-inset-bottom, 10px);
+    margin-left: clamp(8px, 2vw, 20px);
   }
   .dpad-btn {
     position: absolute;
-    width: 48px; height: 48px;
-    background: rgba(255,255,255,0.12);
-    border: 2px solid rgba(255,255,255,0.25);
-    border-radius: 10px;
+    width: clamp(44px, 8vw, 58px);
+    height: clamp(44px, 8vw, 58px);
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
-    color: rgba(255,255,255,0.5);
-    font-size: 20px;
+    color: rgba(255,255,255,0.6);
+    font-size: clamp(18px, 3.5vw, 24px);
     pointer-events: auto;
     -webkit-tap-highlight-color: transparent;
   }
-  .dpad-btn.active { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); }
-  .dpad-up { top: 0; left: 46px; }
-  .dpad-down { bottom: 0; left: 46px; }
-  .dpad-left { top: 46px; left: 0; }
-  .dpad-right { top: 46px; right: 0; }
+  .dpad-btn.active { background: rgba(255,255,255,0.35); border-color: rgba(255,255,255,0.6); }
+  .dpad-up { top: 0; left: 50%; transform: translateX(-50%); }
+  .dpad-down { bottom: 0; left: 50%; transform: translateX(-50%); }
+  .dpad-left { top: 50%; left: 0; transform: translateY(-50%); }
+  .dpad-right { top: 50%; right: 0; transform: translateY(-50%); }
   .action-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 10px;
-    margin-right: 10px;
+    gap: clamp(6px, 1.5vw, 12px);
+    margin-bottom: env(safe-area-inset-bottom, 10px);
+    margin-right: clamp(8px, 2vw, 20px);
   }
   .action-btn {
-    width: 60px; height: 60px;
+    width: clamp(54px, 10vw, 72px);
+    height: clamp(54px, 10vw, 72px);
     border-radius: 50%;
     border: 2px solid rgba(255,255,255,0.3);
     display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: bold;
-    color: rgba(255,255,255,0.6);
+    font-size: clamp(10px, 2vw, 13px);
+    font-weight: bold;
+    color: rgba(255,255,255,0.7);
     pointer-events: auto;
     -webkit-tap-highlight-color: transparent;
   }
-  .action-btn.active { transform: scale(0.9); }
+  .action-btn.active { transform: scale(0.9); background-blend-mode: screen; }
   .btn-light { background: rgba(66,136,255,0.2); border-color: rgba(66,136,255,0.5); }
   .btn-heavy { background: rgba(255,66,66,0.2); border-color: rgba(255,66,66,0.5); }
   .btn-special { background: rgba(255,204,0,0.2); border-color: rgba(255,204,0,0.5); }
