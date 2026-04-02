@@ -64,7 +64,9 @@ const STATE = {
   SELECT: 'select', STORY_INTRO: 'story_intro',
   DIALOGUE: 'dialogue', INTRO: 'intro',
   FIGHTING: 'fighting', ROUND_END: 'round_end',
-  MATCH_END: 'match_end', STORY_END: 'story_end'
+  MATCH_END: 'match_end', STORY_END: 'story_end',
+  TOURNAMENT_BRACKET: 'tournament_bracket', TOURNAMENT_RESULT: 'tournament_result',
+  TOURNAMENT_CHAMPION: 'tournament_champion'
 };
 
 const FSTATE = {
@@ -1550,7 +1552,7 @@ function drawTitle(ctx) {
   ctx.font='bold 20px sans-serif';ctx.fillStyle='#8899bb';ctx.fillText('風のファイターズ',W/2,195);
 
   const menuY=280;const pulse=Math.sin(game.frameCount*0.06)*0.3+0.7;
-  ['STORY MODE','VS CPU','VS PLAYER','TRAINING'].forEach((item,i)=>{
+  ['STORY MODE','TOURNAMENT','VS CPU','VS PLAYER','TRAINING'].forEach((item,i)=>{
     const sel=i===game.menuIndex;
     ctx.font=sel?'bold 26px sans-serif':'22px sans-serif';
     ctx.fillStyle=sel?`rgba(255,204,68,${pulse+0.3})`:'#556677';
@@ -1669,6 +1671,8 @@ const game = {
   storyTextProgress:0, storyTextTarget:'', storyDialogueIndex:0,
   // bgm
   bgmPlaying:false,
+  // tournament
+  tournament:null,
 
   init() { this.state=STATE.TITLE;this.menuIndex=0;this.frameCount=0; },
 
@@ -1676,10 +1680,21 @@ const game = {
 
   startMatch() {
     const chars=Object.keys(CHARACTERS);
+
+    if(this.mode==='tournament'&&!this.tournament){
+      this._initTournament(chars);return;
+    }
+
     this.p1=new Fighter(chars[this.selectIndex1],1,250);
-    this.p2=new Fighter(chars[this.selectIndex2],2,710);
+    if(this.mode==='tournament'){
+      const oppId=this.tournament.currentOpponent;
+      this.p2=new Fighter(oppId,2,710);
+      this.p2.displayName=CHARACTERS[oppId].name;
+    } else {
+      this.p2=new Fighter(chars[this.selectIndex2],2,710);
+    }
     this.p1.displayName=this.p1Name||this.p1.data.name;
-    this.p2.displayName=this.p2Name||(this.mode==='cpu'?'CPU':this.p2.data.name);
+    if(this.mode!=='tournament') this.p2.displayName=this.p2Name||(this.mode==='cpu'?'CPU':this.p2.data.name);
     this.projectiles=[];this.round=1;this.p1.wins=0;this.p2.wins=0;
 
     if(this.mode==='story'){
@@ -1688,6 +1703,99 @@ const game = {
     } else {
       this.startRound();
     }
+  },
+
+  // === TOURNAMENT SYSTEM ===
+  _initTournament(chars) {
+    const playerChar=chars[this.selectIndex1];
+    // Shuffle other characters for bracket
+    const others=chars.filter(c=>c!==playerChar);
+    for(let i=others.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[others[i],others[j]]=[others[j],others[i]];}
+    // Build 8-player bracket: 4 matches in QF
+    // Player is always in slot 0
+    const seeds=[playerChar,...others];
+    this.tournament={
+      seeds:seeds,
+      // bracket[round][match] = {a, b, winner}
+      bracket:[
+        [{a:seeds[0],b:seeds[1],winner:null},{a:seeds[2],b:seeds[3],winner:null},
+         {a:seeds[4],b:seeds[5],winner:null},{a:seeds[6],b:seeds[7],winner:null}],
+        [{a:null,b:null,winner:null},{a:null,b:null,winner:null}],
+        [{a:null,b:null,winner:null}]
+      ],
+      roundIndex:0,
+      matchIndex:0,
+      currentOpponent:seeds[1],
+      playerChar:playerChar,
+      roundNames:['QUARTER FINALS','SEMI FINALS','FINAL'],
+      resultTimer:0,
+    };
+    this.state=STATE.TOURNAMENT_BRACKET;
+  },
+
+  _tournamentAdvance() {
+    const t=this.tournament;
+    const r=t.bracket[t.roundIndex];
+    const playerChar=t.playerChar;
+
+    // Check if player was eliminated
+    const playerMatch=r[t.matchIndex];
+    if(playerMatch&&playerMatch.winner&&playerMatch.winner!==playerChar){
+      // Player eliminated - show final bracket then go to title
+      this.state=STATE.MATCH_END;this.matchEndTimer=300;
+      saveData.totalLosses++;Storage.save(saveData);
+      return;
+    }
+
+    // Simulate non-player matches in this round
+    for(let i=0;i<r.length;i++){
+      if(r[i].winner) continue;
+      // If neither fighter is the player, simulate
+      if(r[i].a!==playerChar&&r[i].b!==playerChar){
+        // Random winner weighted by stats
+        const sa=CHARACTERS[r[i].a], sb=CHARACTERS[r[i].b];
+        const pa=sa.walkSpeed+sa.attacks.heavy.damage*0.5;
+        const pb=sb.walkSpeed+sb.attacks.heavy.damage*0.5;
+        r[i].winner=Math.random()*pa>Math.random()*pb?r[i].a:r[i].b;
+      }
+    }
+
+    // Fill next round bracket
+    if(t.roundIndex<2){
+      const next=t.bracket[t.roundIndex+1];
+      for(let i=0;i<next.length;i++){
+        next[i].a=r[i*2].winner;
+        next[i].b=r[i*2+1].winner;
+      }
+    }
+
+    // Move to next round
+    t.roundIndex++;
+    if(t.roundIndex>=3){
+      // Tournament complete!
+      this.state=STATE.TOURNAMENT_CHAMPION;
+      this.matchEndTimer=300;
+      saveData.totalWins++;Storage.save(saveData);
+      return;
+    }
+
+    // Find player's next match
+    const nr=t.bracket[t.roundIndex];
+    let found=false;
+    for(let i=0;i<nr.length;i++){
+      if(nr[i].a===playerChar||nr[i].b===playerChar){
+        t.matchIndex=i;
+        t.currentOpponent=nr[i].a===playerChar?nr[i].b:nr[i].a;
+        found=true;break;
+      }
+    }
+
+    if(!found){
+      // Player was eliminated (shouldn't happen if they won)
+      this.state=STATE.TITLE;return;
+    }
+
+    this.state=STATE.TOURNAMENT_BRACKET;
   },
 
   startRound() {
@@ -1728,6 +1836,9 @@ const game = {
       case STATE.ROUND_END: this._updateRoundEnd();break;
       case STATE.MATCH_END: this._updateMatchEnd();break;
       case STATE.STORY_END: this._updateStoryText();break;
+      case STATE.TOURNAMENT_BRACKET: this._updateTournamentBracket();break;
+      case STATE.TOURNAMENT_RESULT: this._updateTournamentResult();break;
+      case STATE.TOURNAMENT_CHAMPION: this._updateMatchEnd();break;
     }
 
     for(let i=particles.length-1;i>=0;i--){if(!particles[i].update())particles.splice(i,1);}
@@ -1735,11 +1846,11 @@ const game = {
   },
 
   _updateTitle() {
-    if(keys['ArrowUp']||keys['KeyW']){if(!this._navHeld){this.menuIndex=(this.menuIndex-1+4)%4;this._navHeld=true;AudioEngine.play('select');}}
-    else if(keys['ArrowDown']||keys['KeyS']){if(!this._navHeld){this.menuIndex=(this.menuIndex+1)%4;this._navHeld=true;AudioEngine.play('select');}}
+    if(keys['ArrowUp']||keys['KeyW']){if(!this._navHeld){this.menuIndex=(this.menuIndex-1+5)%5;this._navHeld=true;AudioEngine.play('select');}}
+    else if(keys['ArrowDown']||keys['KeyS']){if(!this._navHeld){this.menuIndex=(this.menuIndex+1)%5;this._navHeld=true;AudioEngine.play('select');}}
     else this._navHeld=false;
     if(keys['Space']||keys['Enter']){if(!this._confirmHeld){this._confirmHeld=true;
-      this.mode=['story','cpu','pvp','training'][this.menuIndex];
+      this.mode=['story','tournament','cpu','pvp','training'][this.menuIndex];
       // Show name input
       this.state=STATE.NAME_INPUT;
       const overlay=document.getElementById('nameOverlay');
@@ -1805,7 +1916,8 @@ const game = {
     if(this.mode!=='training'){this.timer-=1/60;if(this.timer<=0){this.timer=0;this._endRound();return;}}
     const p1i=getP1Input();
     const dummyInput={left:false,right:false,up:false,down:false,light:false,heavy:false,special:false,throw_btn:false,lightJP:false,heavyJP:false,specialJP:false,throwJP:false};
-    const p2i=(this.mode==='pvp')?getP2Input():(this.mode==='training')?dummyInput:getAIInput(this.p2,this.p1);
+    const aiDiff = this.mode==='tournament'&&this.tournament ? 0.4+this.tournament.roundIndex*0.2 : 0.6;
+    const p2i=(this.mode==='pvp')?getP2Input():(this.mode==='training')?dummyInput:getAIInput(this.p2,this.p1,aiDiff);
     this.p1.update(p1i,this.p2);this.p2.update(p2i,this.p1);
     this._checkHit(this.p1,this.p2);this._checkHit(this.p2,this.p1);
     for(let i=this.projectiles.length-1;i>=0;i--){
@@ -1862,7 +1974,19 @@ const game = {
         if(this.p1.wins>=ROUNDS_TO_WIN)saveData.totalWins++;else saveData.totalLosses++;
         Storage.save(saveData);
 
-        if(this.mode==='story'&&this.p1.wins>=ROUNDS_TO_WIN){
+        if(this.mode==='tournament'&&this.tournament){
+          // Record result in bracket
+          const t=this.tournament;
+          const match=t.bracket[t.roundIndex][t.matchIndex];
+          match.winner=this.p1.wins>=ROUNDS_TO_WIN?t.playerChar:t.currentOpponent;
+          t.resultTimer=0;
+          if(match.winner!==t.playerChar){
+            // Player eliminated
+            this.state=STATE.TOURNAMENT_RESULT;
+          } else {
+            this.state=STATE.TOURNAMENT_RESULT;
+          }
+        } else if(this.mode==='story'&&this.p1.wins>=ROUNDS_TO_WIN){
           const charId=Object.keys(CHARACTERS)[this.selectIndex1];
           this.state=STATE.STORY_END;
           this.storyTextTarget=STORY.characters[charId].ending;
@@ -1877,8 +2001,129 @@ const game = {
 
   _updateMatchEnd() {
     this.matchEndTimer--;
-    if(this.matchEndTimer<=0||((keys['Space']||keys['Enter'])&&!this._confirmHeld)){this._confirmHeld=true;this.state=STATE.TITLE;}
+    if(this.matchEndTimer<=0||((keys['Space']||keys['Enter'])&&!this._confirmHeld)){
+      this._confirmHeld=true;
+      this.tournament=null; // clear tournament on exit
+      this.state=STATE.TITLE;
+    }
     if(!keys['Space']&&!keys['Enter'])this._confirmHeld=false;
+  },
+
+  _updateTournamentBracket() {
+    if(keys['Space']||keys['Enter']){
+      if(!this._confirmHeld){
+        this._confirmHeld=true;
+        // Start next match
+        this.startMatch();
+      }
+    } else this._confirmHeld=false;
+  },
+
+  _updateTournamentResult() {
+    this.tournament.resultTimer++;
+    if(this.tournament.resultTimer>120||((keys['Space']||keys['Enter'])&&!this._confirmHeld)){
+      this._confirmHeld=true;
+      this._tournamentAdvance();
+    }
+    if(!keys['Space']&&!keys['Enter'])this._confirmHeld=false;
+  },
+
+  _drawTournamentBracket(ctx) {
+    const t=this.tournament;if(!t)return;
+    ctx.fillStyle='#080812';ctx.fillRect(0,0,W,H);
+    ctx.textAlign='center';
+
+    // Title
+    const rn=t.roundIndex<3?t.roundNames[t.roundIndex]:'COMPLETE';
+    ctx.fillStyle='#ffcc44';ctx.font='bold 24px sans-serif';
+    ctx.fillText('TOURNAMENT - '+rn,W/2,32);
+
+    // Draw bracket tree
+    const bx=80, by=60, colW=200, rowH=55;
+    const rounds=t.bracket;
+
+    for(let ri=0;ri<3;ri++){
+      const matches=rounds[ri];
+      const matchCount=matches.length;
+      const totalH=matchCount*rowH*Math.pow(2,ri);
+      const startY=by+(H-by-40-totalH)/2;
+
+      for(let mi=0;mi<matchCount;mi++){
+        const m=matches[mi];
+        const x=bx+ri*colW;
+        const spacing=rowH*Math.pow(2,ri);
+        const y=startY+mi*spacing+spacing/2;
+        const slotH=22;
+
+        // Match box
+        const isPlayerMatch=(m.a===t.playerChar||m.b===t.playerChar);
+        const isCurrent=(ri===t.roundIndex&&this.state===STATE.TOURNAMENT_BRACKET);
+
+        // Slot A
+        if(m.a){
+          const isPlayer=m.a===t.playerChar;
+          const isWinner=m.winner===m.a;
+          const isLoser=m.winner&&m.winner!==m.a;
+          ctx.fillStyle=isLoser?'#1a1a22':isPlayer?'#1a2a50':'#16161e';
+          ctx.fillRect(x,y-slotH-2,160,slotH);
+          if(isWinner){ctx.strokeStyle='#ffcc44';ctx.lineWidth=2;ctx.strokeRect(x,y-slotH-2,160,slotH);}
+          else if(isPlayer&&isCurrent){ctx.strokeStyle='#4488ff';ctx.lineWidth=2;ctx.strokeRect(x,y-slotH-2,160,slotH);}
+          ctx.fillStyle=isLoser?'#556':isPlayer?'#88bbff':'#aab';
+          ctx.font=isPlayer?'bold 13px sans-serif':'13px sans-serif';
+          ctx.textAlign='left';
+          ctx.fillText((isPlayer?'★ ':'')+CHARACTERS[m.a].name,x+8,y-slotH+13);
+          if(isWinner){ctx.fillStyle='#ffcc44';ctx.textAlign='right';ctx.fillText('WIN',x+152,y-slotH+13);}
+        } else {
+          ctx.fillStyle='#111';ctx.fillRect(x,y-slotH-2,160,slotH);
+          ctx.fillStyle='#444';ctx.font='13px sans-serif';ctx.textAlign='left';ctx.fillText('---',x+8,y-slotH+13);
+        }
+
+        // Slot B
+        if(m.b){
+          const isPlayer=m.b===t.playerChar;
+          const isWinner=m.winner===m.b;
+          const isLoser=m.winner&&m.winner!==m.b;
+          ctx.fillStyle=isLoser?'#1a1a22':isPlayer?'#1a2a50':'#16161e';
+          ctx.fillRect(x,y+2,160,slotH);
+          if(isWinner){ctx.strokeStyle='#ffcc44';ctx.lineWidth=2;ctx.strokeRect(x,y+2,160,slotH);}
+          else if(isPlayer&&isCurrent){ctx.strokeStyle='#4488ff';ctx.lineWidth=2;ctx.strokeRect(x,y+2,160,slotH);}
+          ctx.fillStyle=isLoser?'#556':isPlayer?'#88bbff':'#aab';
+          ctx.font=isPlayer?'bold 13px sans-serif':'13px sans-serif';
+          ctx.textAlign='left';
+          ctx.fillText((isPlayer?'★ ':'')+CHARACTERS[m.b].name,x+8,y+17);
+          if(isWinner){ctx.fillStyle='#ffcc44';ctx.textAlign='right';ctx.fillText('WIN',x+152,y+17);}
+        } else {
+          ctx.fillStyle='#111';ctx.fillRect(x,y+2,160,slotH);
+          ctx.fillStyle='#444';ctx.font='13px sans-serif';ctx.textAlign='left';ctx.fillText('---',x+8,y+17);
+        }
+
+        // Connector lines to next round
+        if(ri<2&&m.winner){
+          ctx.strokeStyle='#334';ctx.lineWidth=1;
+          const nx=x+160, ny=y;
+          const nextY=startY+Math.floor(mi/2)*spacing*2+spacing;
+          ctx.beginPath();ctx.moveTo(nx,ny);ctx.lineTo(nx+20,ny);ctx.lineTo(nx+20,nextY);ctx.lineTo(nx+40,nextY);ctx.stroke();
+        }
+      }
+    }
+
+    // Instructions
+    ctx.textAlign='center';ctx.fillStyle='#556';ctx.font='14px sans-serif';
+    if(this.state===STATE.TOURNAMENT_BRACKET){
+      const opp=CHARACTERS[t.currentOpponent];
+      ctx.fillStyle='#aab';ctx.font='16px sans-serif';
+      ctx.fillText(`NEXT: vs ${opp.name} (${opp.nameJp})`,W/2,H-55);
+      const pulse=Math.sin(this.frameCount*0.08)*0.3+0.7;
+      ctx.fillStyle=`rgba(255,204,68,${pulse})`;ctx.font='14px sans-serif';
+      ctx.fillText('Space: 試合開始',W/2,H-30);
+    } else if(this.state===STATE.TOURNAMENT_RESULT){
+      const match=t.bracket[t.roundIndex][t.matchIndex];
+      if(match.winner===t.playerChar){
+        ctx.fillStyle='#44cc66';ctx.font='bold 18px sans-serif';ctx.fillText('WIN! 次のラウンドへ進出！',W/2,H-40);
+      } else {
+        ctx.fillStyle='#cc4444';ctx.font='bold 18px sans-serif';ctx.fillText('LOSE... トーナメント敗退',W/2,H-40);
+      }
+    }
   },
 
   render() {
@@ -1978,6 +2223,25 @@ const game = {
         drawTextBox(ctx,this.storyTextTarget,'',this.storyTextProgress);
         break;
       }
+      case STATE.TOURNAMENT_BRACKET:
+      case STATE.TOURNAMENT_RESULT:
+        this._drawTournamentBracket(ctx);
+        break;
+      case STATE.TOURNAMENT_CHAMPION:
+        this._drawTournamentBracket(ctx);
+        // Champion overlay
+        ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,W,H);
+        ctx.textAlign='center';
+        ctx.fillStyle='#ffcc00';ctx.font='bold 52px sans-serif';
+        ctx.fillText('CHAMPION!',W/2,H/2-40);
+        ctx.fillStyle='#fff';ctx.font='bold 24px sans-serif';
+        ctx.fillText(this.p1Name||CHARACTERS[this.tournament.playerChar].name,W/2,H/2+10);
+        ctx.fillStyle='#aab';ctx.font='18px sans-serif';
+        ctx.fillText('風神武闘会 制覇',W/2,H/2+40);
+        const p2=Math.sin(this.frameCount*0.08)*0.3+0.7;
+        ctx.fillStyle=`rgba(150,170,200,${p2})`;ctx.font='16px sans-serif';
+        ctx.fillText('PRESS SPACE',W/2,H/2+80);
+        break;
     }
 
     // Screen flash overlay
@@ -2034,9 +2298,9 @@ canvas.addEventListener('click', e => {
 
   if(game.state===STATE.TITLE){
     const menuY=280;
-    for(let i=0;i<4;i++){
+    for(let i=0;i<5;i++){
       if(y>menuY+i*42-20&&y<menuY+i*42+15){game.menuIndex=i;AudioEngine.play('select');
-        game.mode=['story','cpu','pvp','training'][i];game.state=STATE.NAME_INPUT;
+        game.mode=['story','tournament','cpu','pvp','training'][i];game.state=STATE.NAME_INPUT;
         const ov=document.getElementById('nameOverlay');const inp=document.getElementById('nameInput');
         ov.classList.add('active');inp.value=saveData.playerName||'';setTimeout(()=>inp.focus(),100);return;
       }
