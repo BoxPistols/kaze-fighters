@@ -1021,13 +1021,108 @@ class Fighter {
 
   _drawIdle(ctx,c) {
     const b=Math.sin(this.animFrame*0.08)*2;
-    this._drawLimb(ctx,c.pants,-8,0,-10,18+b,9);this._drawLimb(ctx,c.pants,-10,18+b,-8,34+b,8);this._drawFoot(ctx,c,-8,34+b);
-    this._drawLimb(ctx,c.pants,8,0,10,18+b,9);this._drawLimb(ctx,c.pants,10,18+b,8,34+b,8);this._drawFoot(ctx,c,8,34+b);
-    this._drawBody(ctx,c,0,-38+b,28,38);
-    const ab=Math.sin(this.animFrame*0.08+1)*2;
-    this._drawLimb(ctx,c.gi,-14,-32+b,-18,-16+ab,7);this._drawLimb(ctx,c.skin,-18,-16+ab,-14,-4+ab,6);this._drawFist(ctx,c,-14,-4+ab);
-    this._drawLimb(ctx,c.gi,14,-32+b,20,-18+ab,7);this._drawLimb(ctx,c.skin,20,-18+ab,22,-6+ab,6);this._drawFist(ctx,c,22,-6+ab);
-    this._drawHead(ctx,c,0,-52+b);
+    const id=this.charId;
+
+    // Aura effects (behind character)
+    if(id==='gouki'){
+      ctx.save();ctx.globalAlpha=0.08+Math.sin(this.animFrame*0.06)*0.04;
+      ctx.fillStyle='#8800cc';
+      ctx.beginPath();ctx.arc(0,-20+b,35,0,Math.PI*2);ctx.fill();ctx.restore();
+    } else if(id==='hikari'){
+      ctx.save();ctx.globalAlpha=0.06+Math.sin(this.animFrame*0.05)*0.03;
+      ctx.fillStyle='#ffee66';
+      ctx.beginPath();ctx.arc(0,-25+b,30,0,Math.PI*2);ctx.fill();ctx.restore();
+    } else if(id==='maki'){
+      ctx.save();ctx.globalAlpha=0.05+Math.sin(this.animFrame*0.04)*0.03;
+      ctx.fillStyle='#440066';
+      for(let i=0;i<3;i++){const ox=Math.sin(this.animFrame*0.03+i*2)*8;
+        ctx.beginPath();ctx.arc(ox,-20+b-i*5,20-i*4,0,Math.PI*2);ctx.fill();}
+      ctx.restore();
+    }
+
+    if(id==='gouki'){
+      // Wide power stance, arms slightly apart, menacing lean forward
+      this._drawLimb(ctx,c.pants,-12,0,-16,18+b,10);this._drawLimb(ctx,c.pants,-16,18+b,-14,34+b,9);this._drawFoot(ctx,c,-14,34+b);
+      this._drawLimb(ctx,c.pants,12,0,16,18+b,10);this._drawLimb(ctx,c.pants,16,18+b,14,34+b,9);this._drawFoot(ctx,c,14,34+b);
+      this._drawBody(ctx,c,2,-38+b,28,38);
+      this._drawLimb(ctx,c.gi,-16,-32+b,-24,-18+b,8);this._drawLimb(ctx,c.skin,-24,-18+b,-22,-6+b,7);this._drawFist(ctx,c,-22,-6+b);
+      this._drawLimb(ctx,c.gi,16,-32+b,26,-16+b,8);this._drawLimb(ctx,c.skin,26,-16+b,28,-4+b,7);this._drawFist(ctx,c,28,-4+b);
+      this._drawHead(ctx,c,2,-52+b);
+    } else if(id==='hikari'){
+      // Elegant stance, one hand raised gracefully
+      const ab=Math.sin(this.animFrame*0.06+1)*2;
+      this._drawLimb(ctx,c.pants,-6,0,-6,18+b,8);this._drawLimb(ctx,c.pants,-6,18+b,-6,34+b,7);this._drawFoot(ctx,c,-6,34+b);
+      this._drawLimb(ctx,c.pants,6,0,8,18+b,8);this._drawLimb(ctx,c.pants,8,18+b,6,34+b,7);this._drawFoot(ctx,c,6,34+b);
+      this._drawBody(ctx,c,0,-38+b,28,38);
+      // Left arm at side
+      this._drawLimb(ctx,c.gi,-14,-32+b,-16,-18+ab,6);this._drawLimb(ctx,c.skin,-16,-18+ab,-14,-8+ab,5);this._drawFist(ctx,c,-14,-8+ab);
+      // Right arm raised elegantly
+      this._drawLimb(ctx,c.gi,14,-34+b,22,-44+ab,6);this._drawLimb(ctx,c.skin,22,-44+ab,18,-52+ab,5);this._drawFist(ctx,c,18,-52+ab);
+      this._drawHead(ctx,c,0,-52+b);
+    } else if(id==='tetsu'){
+      // Heavy wide stance, fists clenched forward
+      this._drawLimb(ctx,c.pants,-12,0,-15,16+b,11);this._drawLimb(ctx,c.pants,-15,16+b,-14,34+b,10);this._drawFoot(ctx,c,-14,34+b);
+      this._drawLimb(ctx,c.pants,12,0,15,16+b,11);this._drawLimb(ctx,c.pants,15,16+b,14,34+b,10);this._drawFoot(ctx,c,14,34+b);
+      this._drawBody(ctx,c,0,-38+b,28,38);
+      // Both arms forward in guard
+      const ab=Math.sin(this.animFrame*0.07)*1;
+      this._drawLimb(ctx,c.gi,-14,-30+b,-8,-16+ab,9);this._drawLimb(ctx,c.skin,-8,-16+ab,2,-18+ab,8);this._drawFist(ctx,c,2,-18+ab);
+      this._drawLimb(ctx,c.gi,14,-30+b,18,-14+ab,9);this._drawLimb(ctx,c.skin,18,-14+ab,24,-10+ab,8);this._drawFist(ctx,c,24,-10+ab);
+      this._drawHead(ctx,c,0,-52+b);
+    } else if(id==='yuki'){
+      // Playful loose stance, one hand behind back
+      const ab=Math.sin(this.animFrame*0.09+0.5)*3;
+      this._drawLimb(ctx,c.pants,-5,0,-4,18+b,8);this._drawLimb(ctx,c.pants,-4,18+b,-5,34+b,7);this._drawFoot(ctx,c,-5,34+b);
+      this._drawLimb(ctx,c.pants,7,0,10,16+b,8);this._drawLimb(ctx,c.pants,10,16+b,8,34+b,7);this._drawFoot(ctx,c,8,34+b);
+      this._drawBody(ctx,c,1,-38+b,28,38);
+      // Left arm behind back
+      this._drawLimb(ctx,c.gi,-14,-32+b,-18,-22+ab,6);this._drawLimb(ctx,c.skin,-18,-22+ab,-12,-14+ab,5);
+      // Right arm forward loosely
+      this._drawLimb(ctx,c.gi,14,-32+b,22,-22+ab,6);this._drawLimb(ctx,c.skin,22,-22+ab,20,-12+ab,5);this._drawFist(ctx,c,20,-12+ab);
+      this._drawHead(ctx,c,1,-52+b,Math.sin(this.animFrame*0.04)*0.05);
+    } else if(id==='ren'){
+      // Dynamic kung fu stance, one leg raised slightly, fists ready
+      const ab=Math.sin(this.animFrame*0.1)*2;
+      this._drawLimb(ctx,c.pants,-8,0,-10,18+b,9);this._drawLimb(ctx,c.pants,-10,18+b,-8,34+b,8);this._drawFoot(ctx,c,-8,34+b);
+      // Right leg slightly lifted
+      const legLift=Math.abs(Math.sin(this.animFrame*0.04))*4;
+      this._drawLimb(ctx,c.pants,8,0,12,14+b-legLift,9);this._drawLimb(ctx,c.pants,12,14+b-legLift,10,28+b-legLift,8);this._drawFoot(ctx,c,10,28+b-legLift);
+      this._drawBody(ctx,c,0,-38+b,28,38);
+      // Both arms up in guard, bouncing
+      this._drawLimb(ctx,c.gi,-14,-32+b,-6,-24+ab,7);this._drawLimb(ctx,c.skin,-6,-24+ab,0,-18+ab,6);this._drawFist(ctx,c,0,-18+ab);
+      this._drawLimb(ctx,c.gi,14,-32+b,22,-26+ab,7);this._drawLimb(ctx,c.skin,22,-26+ab,26,-20+ab,6);this._drawFist(ctx,c,26,-20+ab);
+      this._drawHead(ctx,c,0,-52+b);
+    } else if(id==='maki'){
+      // Low stealth stance, arms crossed, slightly crouched
+      const ab=Math.sin(this.animFrame*0.06)*1.5;
+      this._drawLimb(ctx,c.pants,-8,2,-12,20+b,8);this._drawLimb(ctx,c.pants,-12,20+b,-10,34+b,7);this._drawFoot(ctx,c,-10,34+b);
+      this._drawLimb(ctx,c.pants,8,2,12,18+b,8);this._drawLimb(ctx,c.pants,12,18+b,10,34+b,7);this._drawFoot(ctx,c,10,34+b);
+      this._drawBody(ctx,c,0,-36+b,28,38);
+      // Arms crossed in front
+      this._drawLimb(ctx,c.gi,-14,-30+b,4,-26+ab,7);this._drawLimb(ctx,c.skin,4,-26+ab,14,-22+ab,6);this._drawFist(ctx,c,14,-22+ab);
+      this._drawLimb(ctx,c.gi,14,-28+b,-2,-24+ab,7);this._drawLimb(ctx,c.skin,-2,-24+ab,-10,-20+ab,6);this._drawFist(ctx,c,-10,-20+ab);
+      this._drawHead(ctx,c,0,-50+b);
+    } else if(id==='akane'){
+      // Agile stance, side-facing, one fist forward
+      const ab=Math.sin(this.animFrame*0.1+1)*2;
+      this._drawLimb(ctx,c.pants,-6,0,-8,18+b,8);this._drawLimb(ctx,c.pants,-8,18+b,-6,34+b,7);this._drawFoot(ctx,c,-6,34+b);
+      this._drawLimb(ctx,c.pants,8,0,12,16+b,8);this._drawLimb(ctx,c.pants,12,16+b,10,34+b,7);this._drawFoot(ctx,c,10,34+b);
+      this._drawBody(ctx,c,2,-38+b,28,38);
+      // Back arm tucked
+      this._drawLimb(ctx,c.gi,-14,-32+b,-10,-20+ab,6);this._drawLimb(ctx,c.skin,-10,-20+ab,-6,-12+ab,5);this._drawFist(ctx,c,-6,-12+ab);
+      // Front fist extended
+      this._drawLimb(ctx,c.gi,14,-34+b,26,-30+ab,7);this._drawLimb(ctx,c.skin,26,-30+ab,32,-28+ab,6);this._drawFist(ctx,c,32,-28+ab);
+      this._drawHead(ctx,c,2,-52+b);
+    } else {
+      // Default (Kaito) - balanced fighting stance
+      const ab=Math.sin(this.animFrame*0.08+1)*2;
+      this._drawLimb(ctx,c.pants,-8,0,-10,18+b,9);this._drawLimb(ctx,c.pants,-10,18+b,-8,34+b,8);this._drawFoot(ctx,c,-8,34+b);
+      this._drawLimb(ctx,c.pants,8,0,10,18+b,9);this._drawLimb(ctx,c.pants,10,18+b,8,34+b,8);this._drawFoot(ctx,c,8,34+b);
+      this._drawBody(ctx,c,0,-38+b,28,38);
+      this._drawLimb(ctx,c.gi,-14,-32+b,-18,-16+ab,7);this._drawLimb(ctx,c.skin,-18,-16+ab,-14,-4+ab,6);this._drawFist(ctx,c,-14,-4+ab);
+      this._drawLimb(ctx,c.gi,14,-32+b,20,-18+ab,7);this._drawLimb(ctx,c.skin,20,-18+ab,22,-6+ab,6);this._drawFist(ctx,c,22,-6+ab);
+      this._drawHead(ctx,c,0,-52+b);
+    }
   }
   _drawWalk(ctx,c,d) {
     const s=Math.sin(this.animFrame*0.15)*10;
@@ -1217,13 +1312,74 @@ class Fighter {
     ctx.strokeStyle='rgba(100,180,255,0.5)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(5,-30,18,0,Math.PI*2);ctx.stroke();
   }
   _drawVictory(ctx,c) {
-    ctx.translate(0,-Math.abs(Math.sin(this.animFrame*0.06))*5);
-    this._drawLimb(ctx,c.pants,-8,0,-10,18,9);this._drawLimb(ctx,c.pants,-10,18,-8,34,8);this._drawFoot(ctx,c,-8,34);
-    this._drawLimb(ctx,c.pants,8,0,10,18,9);this._drawLimb(ctx,c.pants,10,18,8,34,8);this._drawFoot(ctx,c,8,34);
-    this._drawBody(ctx,c,0,-38,28,38);
-    this._drawLimb(ctx,c.gi,-14,-34,-20,-50,7);this._drawLimb(ctx,c.skin,-20,-50,-16,-60,6);this._drawFist(ctx,c,-16,-60);
-    this._drawLimb(ctx,c.gi,14,-34,20,-50,7);this._drawLimb(ctx,c.skin,20,-50,16,-60,6);this._drawFist(ctx,c,16,-60);
-    this._drawHead(ctx,c,0,-52);
+    const id=this.charId;
+    const bounce=Math.abs(Math.sin(this.animFrame*0.06))*5;
+
+    if(id==='gouki'){
+      // Arms crossed, intimidating (no bounce)
+      this._drawLimb(ctx,c.pants,-12,0,-14,18,10);this._drawLimb(ctx,c.pants,-14,18,-12,34,9);this._drawFoot(ctx,c,-12,34);
+      this._drawLimb(ctx,c.pants,12,0,14,18,10);this._drawLimb(ctx,c.pants,14,18,12,34,9);this._drawFoot(ctx,c,12,34);
+      this._drawBody(ctx,c,0,-38,28,38);
+      this._drawLimb(ctx,c.gi,-16,-32,4,-26,8);this._drawLimb(ctx,c.skin,4,-26,16,-22,7);this._drawFist(ctx,c,16,-22);
+      this._drawLimb(ctx,c.gi,16,-30,-2,-24,8);this._drawLimb(ctx,c.skin,-2,-24,-12,-20,7);this._drawFist(ctx,c,-12,-20);
+      // Power aura
+      ctx.save();ctx.globalAlpha=0.15;ctx.fillStyle='#9900ff';
+      ctx.beginPath();ctx.arc(0,-25,40+Math.sin(this.animFrame*0.1)*5,0,Math.PI*2);ctx.fill();ctx.restore();
+      this._drawHead(ctx,c,0,-52);
+    } else if(id==='hikari'){
+      // Graceful bow
+      ctx.translate(0,-bounce*0.5);
+      this._drawLimb(ctx,c.pants,-6,0,-6,18,8);this._drawLimb(ctx,c.pants,-6,18,-6,34,7);this._drawFoot(ctx,c,-6,34);
+      this._drawLimb(ctx,c.pants,6,0,6,18,8);this._drawLimb(ctx,c.pants,6,18,6,34,7);this._drawFoot(ctx,c,6,34);
+      this._drawBody(ctx,c,0,-38,28,38);
+      // Hands together in prayer
+      this._drawLimb(ctx,c.gi,-14,-34,-4,-28,6);this._drawLimb(ctx,c.skin,-4,-28,2,-30,5);
+      this._drawLimb(ctx,c.gi,14,-34,4,-28,6);this._drawLimb(ctx,c.skin,4,-28,2,-30,5);
+      // Light glow
+      ctx.save();ctx.globalAlpha=0.2;ctx.fillStyle='#ffee88';
+      ctx.beginPath();ctx.arc(0,-30,15+Math.sin(this.animFrame*0.1)*3,0,Math.PI*2);ctx.fill();ctx.restore();
+      this._drawHead(ctx,c,0,-52,0.1);
+    } else if(id==='tetsu'){
+      // Flex muscles pose
+      this._drawLimb(ctx,c.pants,-12,0,-14,18,11);this._drawLimb(ctx,c.pants,-14,18,-12,34,10);this._drawFoot(ctx,c,-12,34);
+      this._drawLimb(ctx,c.pants,12,0,14,18,11);this._drawLimb(ctx,c.pants,14,18,12,34,10);this._drawFoot(ctx,c,12,34);
+      this._drawBody(ctx,c,0,-38,28,38);
+      // Flexing arms up
+      this._drawLimb(ctx,c.gi,-16,-34,-24,-44,9);this._drawLimb(ctx,c.skin,-24,-44,-18,-36,8);this._drawFist(ctx,c,-18,-36);
+      this._drawLimb(ctx,c.gi,16,-34,24,-44,9);this._drawLimb(ctx,c.skin,24,-44,18,-36,8);this._drawFist(ctx,c,18,-36);
+      this._drawHead(ctx,c,0,-52);
+    } else if(id==='maki'){
+      // Turn away, cape flowing
+      this._drawLimb(ctx,c.pants,-8,0,-8,18,8);this._drawLimb(ctx,c.pants,-8,18,-8,34,7);this._drawFoot(ctx,c,-8,34);
+      this._drawLimb(ctx,c.pants,8,0,8,18,8);this._drawLimb(ctx,c.pants,8,18,8,34,7);this._drawFoot(ctx,c,8,34);
+      this._drawBody(ctx,c,0,-38,28,38);
+      // Cape flow
+      const w=Math.sin(this.animFrame*0.05)*6;
+      ctx.fillStyle=c.giLight;ctx.beginPath();
+      ctx.moveTo(-14,-34);ctx.quadraticCurveTo(-22+w,-10,-18+w,20);
+      ctx.lineTo(-10,18);ctx.lineTo(-12,-30);ctx.fill();
+      this._drawLimb(ctx,c.gi,-14,-32,-18,-22,7);this._drawLimb(ctx,c.skin,-18,-22,-16,-14,6);
+      this._drawLimb(ctx,c.gi,14,-32,12,-24,7);this._drawLimb(ctx,c.skin,12,-24,8,-18,6);
+      this._drawHead(ctx,c,0,-52,-0.1);
+    } else if(id==='ren'){
+      // Jump kick celebration pose
+      ctx.translate(0,-bounce*1.5);
+      this._drawLimb(ctx,c.pants,-8,0,-12,14,9);this._drawLimb(ctx,c.pants,-12,14,-8,26,8);this._drawFoot(ctx,c,-8,26);
+      this._drawLimb(ctx,c.pants,8,-2,18,8,9);this._drawLimb(ctx,c.pants,18,8,22,18,8);this._drawFoot(ctx,c,22,18);
+      this._drawBody(ctx,c,0,-38,28,38);
+      this._drawLimb(ctx,c.gi,-14,-34,-20,-50,7);this._drawLimb(ctx,c.skin,-20,-50,-16,-60,6);this._drawFist(ctx,c,-16,-60);
+      this._drawLimb(ctx,c.gi,14,-34,20,-50,7);this._drawLimb(ctx,c.skin,20,-50,16,-60,6);this._drawFist(ctx,c,16,-60);
+      this._drawHead(ctx,c,0,-52);
+    } else {
+      // Default: arms raised (Kaito, Akane, Yuki)
+      ctx.translate(0,-bounce);
+      this._drawLimb(ctx,c.pants,-8,0,-10,18,9);this._drawLimb(ctx,c.pants,-10,18,-8,34,8);this._drawFoot(ctx,c,-8,34);
+      this._drawLimb(ctx,c.pants,8,0,10,18,9);this._drawLimb(ctx,c.pants,10,18,8,34,8);this._drawFoot(ctx,c,8,34);
+      this._drawBody(ctx,c,0,-38,28,38);
+      this._drawLimb(ctx,c.gi,-14,-34,-20,-50,7);this._drawLimb(ctx,c.skin,-20,-50,-16,-60,6);this._drawFist(ctx,c,-16,-60);
+      this._drawLimb(ctx,c.gi,14,-34,20,-50,7);this._drawLimb(ctx,c.skin,20,-50,16,-60,6);this._drawFist(ctx,c,16,-60);
+      this._drawHead(ctx,c,0,-52);
+    }
   }
   _drawDefeat(ctx,c) {
     ctx.translate(0,10);
