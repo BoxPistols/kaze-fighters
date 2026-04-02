@@ -454,16 +454,16 @@ class Fighter {
     this.lastTapDir=0;this.lastTapTime=0;
     this.throwTarget=null;this.throwFrame=0;
     this.wasDown=false;this._aiDash=false;
-    this.displayName='';
+    this.displayName='';this.guardShowTimer=0;this.currentInput={};
   }
   reset(x) {
     this.x=x;this.y=GROUND_Y;this.vx=0;this.vy=0;this.hp=100;this.super=0;
     this.fstate=FSTATE.IDLE;this.attackFrame=0;this.attackData=null;this.attackName='';
     this.hitStun=0;this.knockdownTime=0;this.hasHit=false;this.comboCount=0;this.comboTimer=0;
     this.animFrame=0;this.flashTimer=0;this.isRushing=false;this.isDiving=false;this.blockStun=0;
-    this.prevInput={};this.dashTimer=0;this.dashDir=0;this.dashFrame=0;
+    this.prevInput={};this.currentInput={};this.dashTimer=0;this.dashDir=0;this.dashFrame=0;
     this.lastTapDir=0;this.lastTapTime=0;this.throwTarget=null;this.throwFrame=0;
-    this.wasDown=false;this._aiDash=false;
+    this.wasDown=false;this._aiDash=false;this.guardShowTimer=0;
   }
   getHurtbox() {
     const w=this.bodyW,h=this.fstate===FSTATE.CROUCH?this.bodyH*0.6:this.bodyH;
@@ -495,7 +495,9 @@ class Fighter {
 
   update(input,opponent) {
     this.animFrame++;
+    this.currentInput=input; // store for blocking check
     if(this.flashTimer>0) this.flashTimer--;
+    if(this.guardShowTimer>0) this.guardShowTimer--;
     if(this.comboTimer>0){this.comboTimer--;if(this.comboTimer<=0)this.comboCount=0;}
     if(this.fstate!==FSTATE.ATTACK&&this.fstate!==FSTATE.HIT&&this.fstate!==FSTATE.KNOCKDOWN&&
        this.fstate!==FSTATE.DASH_F&&this.fstate!==FSTATE.DASH_B&&this.fstate!==FSTATE.THROW&&this.fstate!==FSTATE.THROWN)
@@ -629,7 +631,8 @@ class Fighter {
     if(isBlocking){
       this.fstate=FSTATE.BLOCK;this.blockStun=Math.floor(hitstun*0.6);
       this.vx=attackerDir*knockback*0.3;this.hp-=Math.floor(damage*0.1);
-      this.flashTimer=5;AudioEngine.play('block');
+      this.flashTimer=5;this.guardShowTimer=30;AudioEngine.play('block');
+      game.screenShake=2;
       spawnBlockParticles(this.x-attackerDir*20,this.y-this.bodyH*0.5);return;
     }
     this.hp-=damage;this.super=Math.min(this.maxSuper,this.super+damage*0.8);this.flashTimer=8;
@@ -643,8 +646,9 @@ class Fighter {
 
   isBlockingAttack(attackerDir) {
     if(this.fstate===FSTATE.HIT||this.fstate===FSTATE.KNOCKDOWN||this.fstate===FSTATE.ATTACK||this.fstate===FSTATE.THROW||this.fstate===FSTATE.THROWN||this.fstate===FSTATE.DASH_F||this.fstate===FSTATE.DASH_B)return false;
-    // Blocking = holding direction away from attacker (current or previous frame)
-    const holdBack = (attackerDir>0&&(this.prevInput.left)) || (attackerDir<0&&(this.prevInput.right));
+    // Blocking = holding direction away from attacker
+    const ci=this.currentInput||{};const pi=this.prevInput||{};
+    const holdBack = (attackerDir>0&&(ci.left||pi.left)) || (attackerDir<0&&(ci.right||pi.right));
     return this.fstate===FSTATE.WALK_B || this.fstate===FSTATE.BLOCK ||
       ((this.fstate===FSTATE.IDLE||this.fstate===FSTATE.CROUCH) && holdBack);
   }
@@ -692,6 +696,14 @@ class Fighter {
       const p=1+Math.sin(this.animFrame*0.2)*0.1;
       ctx.fillStyle='#ffcc00';ctx.font=`bold ${Math.floor(20*p)}px sans-serif`;
       ctx.fillText(`${this.comboCount} HIT!`,this.x,this.y-this.bodyH-55);
+    }
+    // guard indicator
+    if(this.guardShowTimer>0){
+      const ga=this.guardShowTimer/30;
+      ctx.globalAlpha=ga;
+      ctx.fillStyle='#66ccff';ctx.font='bold 18px sans-serif';
+      ctx.fillText('GUARD!',this.x,this.y-this.bodyH-55);
+      ctx.globalAlpha=1;
     }
     ctx.restore();
   }
