@@ -661,6 +661,10 @@ class Fighter {
     if(this.isDiving&&this.attackData&&this.attackFrame>=this.attackData.startup){this.vx=this.dir*3;this.vy=8;}
 
     this.x+=this.vx;this.y+=this.vy;
+    // Ceiling clamp - prevent flying off screen
+    const CEILING=80;
+    if(this.y<CEILING){this.y=CEILING;if(this.vy<0)this.vy=0;}
+    // Ground collision
     if(this.y>=GROUND_Y){this.y=GROUND_Y;this.vy=0;
       if(this.fstate===FSTATE.JUMP)this.fstate=FSTATE.IDLE;
       if(this.isDiving){this.isDiving=false;this.fstate=FSTATE.IDLE;this.attackData=null;game.screenShake=3;}
