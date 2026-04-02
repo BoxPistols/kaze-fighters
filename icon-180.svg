@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" width="180" height="180">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffcc44"/>
+      <stop offset="100%" stop-color="#ff6644"/>
+    </linearGradient>
+    <linearGradient id="goldSubtle" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffcc44" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ff6644" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="180" height="180" rx="28" ry="28" fill="#0a0a18"/>
+  <rect x="2" y="2" width="176" height="176" rx="26" ry="26" fill="none" stroke="#ffcc44" stroke-width="1.5" opacity="0.3"/>
+  <text x="90" y="115" text-anchor="middle" font-family="serif" font-size="120" font-weight="bold" fill="url(#gold)">風</text>
+  <text x="90" y="155" text-anchor="middle" font-family="'Arial Black', 'Helvetica Neue', sans-serif" font-size="22" font-weight="bold" letter-spacing="6" fill="url(#goldSubtle)">FIGHTERS</text>
+</svg>

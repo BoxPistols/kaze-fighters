@@ -1,0 +1,14 @@
+{
+  "name": "KAZE FIGHTERS - 風のファイターズ",
+  "short_name": "KAZE FIGHTERS",
+  "description": "2D格闘ゲーム - 8人のファイターで風神武闘会を制覇せよ",
+  "start_url": ".",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#0a0a18",
+  "theme_color": "#0a0a18",
+  "icons": [
+    { "src": "icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" },
+    { "src": "icon-180.svg", "sizes": "180x180", "type": "image/svg+xml" }
+  ]
+}
