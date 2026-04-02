@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<title>KAZE FIGHTERS - 風のファイターズ</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: #000;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  #gameContainer {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+  }
+  canvas {
+    display: block;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+  /* Touch controls overlay */
+  #touchControls {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 40vh;
+    pointer-events: none;
+    z-index: 10;
+  }
+  #touchControls.active { display: flex; justify-content: space-between; align-items: flex-end; padding: 10px; }
+  .touch-area { pointer-events: auto; }
+  .dpad {
+    position: relative;
+    width: 140px; height: 140px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+  }
+  .dpad-btn {
+    position: absolute;
+    width: 48px; height: 48px;
+    background: rgba(255,255,255,0.12);
+    border: 2px solid rgba(255,255,255,0.25);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.5);
+    font-size: 20px;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .dpad-btn.active { background: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.5); }
+  .dpad-up { top: 0; left: 46px; }
+  .dpad-down { bottom: 0; left: 46px; }
+  .dpad-left { top: 46px; left: 0; }
+  .dpad-right { top: 46px; right: 0; }
+  .action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+  }
+  .action-btn {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: bold;
+    color: rgba(255,255,255,0.6);
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .action-btn.active { transform: scale(0.9); }
+  .btn-light { background: rgba(66,136,255,0.2); border-color: rgba(66,136,255,0.5); }
+  .btn-heavy { background: rgba(255,66,66,0.2); border-color: rgba(255,66,66,0.5); }
+  .btn-special { background: rgba(255,204,0,0.2); border-color: rgba(255,204,0,0.5); }
+  .btn-throw { background: rgba(0,200,100,0.2); border-color: rgba(0,200,100,0.5); }
+
+  /* Name input overlay */
+  #nameOverlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 100;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  #nameOverlay.active { display: flex; }
+  #nameOverlay h2 {
+    color: #ffcc44;
+    font-size: clamp(20px, 4vw, 32px);
+    margin-bottom: 20px;
+  }
+  #nameOverlay input {
+    background: #1a1a2e;
+    border: 2px solid #4488ff;
+    color: #fff;
+    font-size: clamp(16px, 3vw, 24px);
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: min(300px, 80vw);
+    outline: none;
+  }
+  #nameOverlay input:focus { border-color: #ffcc44; }
+  #nameOverlay .name-hint {
+    color: #667;
+    font-size: clamp(12px, 2vw, 14px);
+    margin-top: 10px;
+  }
+  #nameOverlay button {
+    margin-top: 20px;
+    background: #4488ff;
+    color: #fff;
+    border: none;
+    padding: 12px 40px;
+    border-radius: 8px;
+    font-size: clamp(14px, 2.5vw, 18px);
+    cursor: pointer;
+  }
+  #nameOverlay button:hover { background: #5599ff; }
+</style>
+</head>
+<body>
+<div id="gameContainer">
+  <canvas id="gameCanvas"></canvas>
+</div>
+
+<div id="touchControls">
+  <div class="touch-area">
+    <div class="dpad">
+      <div class="dpad-btn dpad-up" data-dir="up">&#9650;</div>
+      <div class="dpad-btn dpad-down" data-dir="down">&#9660;</div>
+      <div class="dpad-btn dpad-left" data-dir="left">&#9664;</div>
+      <div class="dpad-btn dpad-right" data-dir="right">&#9654;</div>
+    </div>
+  </div>
+  <div class="touch-area">
+    <div class="action-buttons">
+      <div class="action-btn btn-light" data-action="light">パンチ</div>
+      <div class="action-btn btn-heavy" data-action="heavy">キック</div>
+      <div class="action-btn btn-special" data-action="special">必殺</div>
+      <div class="action-btn btn-throw" data-action="throw_btn">投げ</div>
+    </div>
+  </div>
+</div>
+
+<div id="nameOverlay">
+  <h2>プレイヤー名を入力</h2>
+  <input type="text" id="nameInput" placeholder="名前を入力..." maxlength="12" autocomplete="off">
+  <div class="name-hint">未入力の場合はデフォルト名が使用されます</div>
+  <button id="nameConfirm">決定 (Space)</button>
+</div>
+
+<script src="story.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
