@@ -399,7 +399,7 @@ const CHARACTERS = {
       special:{damage:12,startup:12,active:60,recovery:15,knockback:10,hitstun:20,sound:'fireball',type:'projectile',projSpeed:6,projColor:'#44aaff',anim:'special'},
     },
     walkSpeed:3.5, jumpPower:-13, dashSpeed:DASH_SPEED,
-    description:'波動拳を操る正統派格闘家'
+    bodyScale:1.0, description:'波動拳を操る正統派格闘家'
   },
   akane: {
     name: 'AKANE', nameJp: 'アカネ',
@@ -417,7 +417,115 @@ const CHARACTERS = {
       special:{damage:15,startup:8,active:12,recovery:14,knockback:14,hitstun:22,sound:'special',type:'rush',rushDist:180,hitboxW:55,hitboxH:35,hitboxX:30,hitboxY:-35,anim:'rush'},
     },
     walkSpeed:4.2, jumpPower:-13.5, dashSpeed:DASH_SPEED+2,
-    description:'疾風の如き高速格闘家'
+    bodyScale:1.0, description:'疾風の如き高速格闘家'
+  },
+  gouki: {
+    name: 'GOUKI', nameJp: 'ゴウキ',
+    colors: { gi:'#3a1155', giLight:'#5a2277', belt:'#111', skin:'#d0a070', hair:'#1a0a00', pants:'#2a0d3d', headband:'#880044' },
+    attacks: {
+      light:{damage:8,startup:5,active:4,recovery:6,knockback:5,hitstun:12,hitboxW:55,hitboxH:25,hitboxX:30,hitboxY:-38,sound:'punch_heavy',type:'punch',anim:'punch_light'},
+      heavy:{damage:20,startup:10,active:5,recovery:16,knockback:12,hitstun:22,hitboxW:70,hitboxH:30,hitboxX:25,hitboxY:-18,sound:'kick_heavy',type:'kick',anim:'kick_heavy'},
+      crouch_light:{damage:7,startup:4,active:4,recovery:7,knockback:3,hitstun:10,hitboxW:50,hitboxH:22,hitboxX:25,hitboxY:-8,sound:'punch_light',type:'punch',anim:'crouch_punch'},
+      crouch_heavy:{damage:14,startup:8,active:5,recovery:18,knockback:8,hitstun:24,hitboxW:80,hitboxH:22,hitboxX:20,hitboxY:5,sound:'sweep',type:'sweep',anim:'sweep',forceKnockdown:true},
+      uppercut:{damage:22,startup:7,active:6,recovery:20,knockback:10,hitstun:28,hitboxW:45,hitboxH:65,hitboxX:15,hitboxY:-70,sound:'uppercut',type:'uppercut',anim:'uppercut',launch:true},
+      air_light:{damage:10,startup:4,active:5,recovery:4,knockback:6,hitstun:14,hitboxW:55,hitboxH:40,hitboxX:15,hitboxY:-15,sound:'punch_heavy',type:'punch',anim:'air_punch'},
+      air_heavy:{damage:16,startup:6,active:5,recovery:5,knockback:10,hitstun:18,hitboxW:60,hitboxH:45,hitboxX:20,hitboxY:-10,sound:'kick_heavy',type:'kick',anim:'air_kick'},
+      divekick:{damage:14,startup:5,active:20,recovery:10,knockback:10,hitstun:16,hitboxW:40,hitboxH:50,hitboxX:15,hitboxY:0,sound:'divekick',type:'divekick',anim:'divekick'},
+      throw_atk:{damage:24,startup:4,active:3,recovery:24,knockback:15,hitstun:35,sound:'throw',type:'throw',anim:'throw'},
+      special:{damage:18,startup:14,active:60,recovery:18,knockback:12,hitstun:24,sound:'special',type:'projectile',projSpeed:4,projColor:'#9944cc',anim:'special'},
+    },
+    walkSpeed:2.5, jumpPower:-11, dashSpeed:DASH_SPEED-2,
+    bodyScale:1.3, description:'圧倒的パワーの元王者'
+  },
+  hikari: {
+    name: 'HIKARI', nameJp: 'ヒカリ',
+    colors: { gi:'#e8e0d0', giLight:'#fff8ee', belt:'#cc9933', skin:'#f8d8b8', hair:'#ddb844', pants:'#c8b898', headband:'#ffdd66' },
+    attacks: {
+      light:{damage:5,startup:3,active:3,recovery:5,knockback:3,hitstun:9,hitboxW:55,hitboxH:18,hitboxX:35,hitboxY:-42,sound:'punch_light',type:'punch',anim:'punch_light'},
+      heavy:{damage:11,startup:6,active:4,recovery:11,knockback:7,hitstun:16,hitboxW:65,hitboxH:22,hitboxX:30,hitboxY:-22,sound:'kick_light',type:'kick',anim:'kick_heavy'},
+      crouch_light:{damage:4,startup:3,active:3,recovery:5,knockback:2,hitstun:7,hitboxW:50,hitboxH:18,hitboxX:30,hitboxY:-8,sound:'punch_light',type:'punch',anim:'crouch_punch'},
+      crouch_heavy:{damage:8,startup:5,active:4,recovery:12,knockback:4,hitstun:16,hitboxW:70,hitboxH:16,hitboxX:25,hitboxY:5,sound:'sweep',type:'sweep',anim:'sweep',forceKnockdown:true},
+      uppercut:{damage:13,startup:5,active:5,recovery:14,knockback:5,hitstun:20,hitboxW:35,hitboxH:55,hitboxX:15,hitboxY:-60,sound:'uppercut',type:'uppercut',anim:'uppercut',launch:true},
+      air_light:{damage:6,startup:2,active:6,recovery:3,knockback:4,hitstun:10,hitboxW:50,hitboxH:30,hitboxX:15,hitboxY:-15,sound:'punch_light',type:'punch',anim:'air_punch'},
+      air_heavy:{damage:10,startup:3,active:5,recovery:3,knockback:6,hitstun:14,hitboxW:55,hitboxH:35,hitboxX:20,hitboxY:-10,sound:'kick_light',type:'kick',anim:'air_kick'},
+      divekick:{damage:9,startup:3,active:20,recovery:6,knockback:6,hitstun:12,hitboxW:30,hitboxH:40,hitboxX:15,hitboxY:0,sound:'divekick',type:'divekick',anim:'divekick'},
+      throw_atk:{damage:14,startup:3,active:3,recovery:18,knockback:10,hitstun:26,sound:'throw',type:'throw',anim:'throw'},
+      special:{damage:10,startup:8,active:60,recovery:12,knockback:8,hitstun:18,sound:'fireball',type:'projectile',projSpeed:8,projColor:'#ffee88',anim:'special'},
+    },
+    walkSpeed:3.5, jumpPower:-14, dashSpeed:DASH_SPEED,
+    bodyScale:0.85, description:'光を操る神殿の巫女'
+  },
+  tetsu: {
+    name: 'TETSU', nameJp: 'テツ',
+    colors: { gi:'#556677', giLight:'#778899', belt:'#333', skin:'#d8b090', hair:'#444444', pants:'#445566', headband:'#888888' },
+    attacks: {
+      light:{damage:7,startup:5,active:4,recovery:7,knockback:4,hitstun:11,hitboxW:50,hitboxH:25,hitboxX:28,hitboxY:-36,sound:'punch_heavy',type:'punch',anim:'punch_light'},
+      heavy:{damage:18,startup:9,active:5,recovery:15,knockback:10,hitstun:20,hitboxW:65,hitboxH:28,hitboxX:22,hitboxY:-16,sound:'kick_heavy',type:'kick',anim:'kick_heavy'},
+      crouch_light:{damage:6,startup:4,active:4,recovery:6,knockback:3,hitstun:9,hitboxW:48,hitboxH:22,hitboxX:24,hitboxY:-8,sound:'punch_light',type:'punch',anim:'crouch_punch'},
+      crouch_heavy:{damage:12,startup:7,active:5,recovery:16,knockback:6,hitstun:22,hitboxW:75,hitboxH:20,hitboxX:18,hitboxY:5,sound:'sweep',type:'sweep',anim:'sweep',forceKnockdown:true},
+      uppercut:{damage:18,startup:6,active:6,recovery:18,knockback:8,hitstun:26,hitboxW:42,hitboxH:60,hitboxX:14,hitboxY:-65,sound:'uppercut',type:'uppercut',anim:'uppercut',launch:true},
+      air_light:{damage:9,startup:4,active:5,recovery:4,knockback:5,hitstun:12,hitboxW:52,hitboxH:38,hitboxX:14,hitboxY:-14,sound:'punch_heavy',type:'punch',anim:'air_punch'},
+      air_heavy:{damage:14,startup:5,active:5,recovery:5,knockback:8,hitstun:16,hitboxW:58,hitboxH:42,hitboxX:18,hitboxY:-8,sound:'kick_heavy',type:'kick',anim:'air_kick'},
+      divekick:{damage:13,startup:5,active:20,recovery:10,knockback:9,hitstun:15,hitboxW:38,hitboxH:48,hitboxX:14,hitboxY:0,sound:'divekick',type:'divekick',anim:'divekick'},
+      throw_atk:{damage:28,startup:4,active:4,recovery:22,knockback:14,hitstun:36,sound:'throw',type:'throw',anim:'throw'},
+      special:{damage:22,startup:6,active:6,recovery:20,knockback:16,hitstun:32,sound:'throw',type:'rush',rushDist:120,hitboxW:60,hitboxH:50,hitboxX:20,hitboxY:-30,anim:'rush'},
+    },
+    walkSpeed:2.0, jumpPower:-10, dashSpeed:DASH_SPEED-3,
+    bodyScale:1.35, description:'鉄の肉体を持つ元軍人'
+  },
+  yuki: {
+    name: 'YUKI', nameJp: 'ユキ',
+    colors: { gi:'#88bbdd', giLight:'#aaddff', belt:'#4488aa', skin:'#f0dde8', hair:'#ddeeff', pants:'#6699bb', headband:'#44aacc' },
+    attacks: {
+      light:{damage:4,startup:2,active:3,recovery:4,knockback:2,hitstun:7,hitboxW:42,hitboxH:16,hitboxX:28,hitboxY:-44,sound:'punch_light',type:'punch',anim:'punch_light'},
+      heavy:{damage:10,startup:5,active:4,recovery:9,knockback:6,hitstun:14,hitboxW:58,hitboxH:20,hitboxX:22,hitboxY:-20,sound:'kick_light',type:'kick',anim:'kick_heavy'},
+      crouch_light:{damage:3,startup:2,active:3,recovery:4,knockback:1,hitstun:6,hitboxW:40,hitboxH:16,hitboxX:24,hitboxY:-8,sound:'punch_light',type:'punch',anim:'crouch_punch'},
+      crouch_heavy:{damage:8,startup:4,active:4,recovery:10,knockback:3,hitstun:15,hitboxW:68,hitboxH:14,hitboxX:18,hitboxY:5,sound:'sweep',type:'sweep',anim:'sweep',forceKnockdown:true},
+      uppercut:{damage:12,startup:4,active:5,recovery:12,knockback:4,hitstun:18,hitboxW:36,hitboxH:50,hitboxX:12,hitboxY:-55,sound:'uppercut',type:'uppercut',anim:'uppercut',launch:true},
+      air_light:{damage:5,startup:2,active:6,recovery:2,knockback:3,hitstun:8,hitboxW:48,hitboxH:28,hitboxX:12,hitboxY:-12,sound:'punch_light',type:'punch',anim:'air_punch'},
+      air_heavy:{damage:9,startup:3,active:5,recovery:3,knockback:5,hitstun:12,hitboxW:52,hitboxH:32,hitboxX:15,hitboxY:-8,sound:'kick_light',type:'kick',anim:'air_kick'},
+      divekick:{damage:8,startup:2,active:22,recovery:5,knockback:6,hitstun:10,hitboxW:28,hitboxH:42,hitboxX:12,hitboxY:5,sound:'divekick',type:'divekick',anim:'divekick'},
+      throw_atk:{damage:14,startup:2,active:3,recovery:16,knockback:8,hitstun:24,sound:'throw',type:'throw',anim:'throw'},
+      special:{damage:13,startup:6,active:10,recovery:10,knockback:10,hitstun:18,sound:'special',type:'rush',rushDist:200,hitboxW:45,hitboxH:30,hitboxX:25,hitboxY:-35,anim:'rush'},
+    },
+    walkSpeed:4.0, jumpPower:-13, dashSpeed:DASH_SPEED+3,
+    bodyScale:0.9, description:'幻惑の氷使い'
+  },
+  ren: {
+    name: 'REN', nameJp: 'レン',
+    colors: { gi:'#338844', giLight:'#44aa66', belt:'#886622', skin:'#e8c098', hair:'#553311', pants:'#226633', headband:'#ddaa44' },
+    attacks: {
+      light:{damage:4,startup:2,active:2,recovery:3,knockback:2,hitstun:7,hitboxW:44,hitboxH:16,hitboxX:26,hitboxY:-42,sound:'punch_light',type:'punch',anim:'punch_light'},
+      heavy:{damage:11,startup:4,active:5,recovery:9,knockback:6,hitstun:15,hitboxW:62,hitboxH:20,hitboxX:22,hitboxY:-20,sound:'kick_heavy',type:'kick',anim:'kick_heavy'},
+      crouch_light:{damage:3,startup:2,active:2,recovery:4,knockback:1,hitstun:6,hitboxW:40,hitboxH:16,hitboxX:22,hitboxY:-8,sound:'punch_light',type:'punch',anim:'crouch_punch'},
+      crouch_heavy:{damage:8,startup:4,active:4,recovery:10,knockback:3,hitstun:16,hitboxW:72,hitboxH:14,hitboxX:16,hitboxY:5,sound:'sweep',type:'sweep',anim:'sweep',forceKnockdown:true},
+      uppercut:{damage:13,startup:3,active:5,recovery:13,knockback:5,hitstun:20,hitboxW:36,hitboxH:52,hitboxX:12,hitboxY:-58,sound:'uppercut',type:'uppercut',anim:'uppercut',launch:true},
+      air_light:{damage:5,startup:2,active:5,recovery:2,knockback:3,hitstun:8,hitboxW:48,hitboxH:28,hitboxX:10,hitboxY:-12,sound:'kick_light',type:'kick',anim:'air_punch'},
+      air_heavy:{damage:10,startup:3,active:6,recovery:3,knockback:6,hitstun:13,hitboxW:55,hitboxH:34,hitboxX:14,hitboxY:-8,sound:'kick_heavy',type:'kick',anim:'air_kick'},
+      divekick:{damage:9,startup:2,active:22,recovery:5,knockback:7,hitstun:11,hitboxW:30,hitboxH:44,hitboxX:12,hitboxY:5,sound:'divekick',type:'divekick',anim:'divekick'},
+      throw_atk:{damage:15,startup:2,active:3,recovery:16,knockback:9,hitstun:25,sound:'throw',type:'throw',anim:'throw'},
+      special:{damage:14,startup:6,active:14,recovery:12,knockback:12,hitstun:20,sound:'special',type:'rush',rushDist:160,hitboxW:50,hitboxH:35,hitboxX:28,hitboxY:-32,anim:'rush'},
+    },
+    walkSpeed:4.5, jumpPower:-14.5, dashSpeed:DASH_SPEED+2,
+    bodyScale:1.0, description:'連撃の拳法少年'
+  },
+  maki: {
+    name: 'MAKI', nameJp: 'マキ',
+    colors: { gi:'#1a1122', giLight:'#2a1a33', belt:'#440044', skin:'#d8c0a8', hair:'#110011', pants:'#150d1e', headband:'#660066' },
+    attacks: {
+      light:{damage:5,startup:3,active:3,recovery:4,knockback:3,hitstun:9,hitboxW:48,hitboxH:18,hitboxX:28,hitboxY:-42,sound:'punch_light',type:'punch',anim:'punch_light'},
+      heavy:{damage:13,startup:6,active:4,recovery:11,knockback:8,hitstun:17,hitboxW:60,hitboxH:24,hitboxX:24,hitboxY:-20,sound:'kick_heavy',type:'kick',anim:'kick_heavy'},
+      crouch_light:{damage:4,startup:3,active:3,recovery:5,knockback:2,hitstun:7,hitboxW:44,hitboxH:18,hitboxX:24,hitboxY:-8,sound:'punch_light',type:'punch',anim:'crouch_punch'},
+      crouch_heavy:{damage:10,startup:6,active:4,recovery:13,knockback:5,hitstun:19,hitboxW:72,hitboxH:16,hitboxX:20,hitboxY:5,sound:'sweep',type:'sweep',anim:'sweep',forceKnockdown:true},
+      uppercut:{damage:15,startup:5,active:5,recovery:15,knockback:6,hitstun:22,hitboxW:38,hitboxH:58,hitboxX:14,hitboxY:-62,sound:'uppercut',type:'uppercut',anim:'uppercut',launch:true},
+      air_light:{damage:7,startup:2,active:6,recovery:3,knockback:4,hitstun:10,hitboxW:50,hitboxH:32,hitboxX:12,hitboxY:-14,sound:'punch_light',type:'punch',anim:'air_punch'},
+      air_heavy:{damage:11,startup:3,active:5,recovery:3,knockback:7,hitstun:14,hitboxW:56,hitboxH:36,hitboxX:16,hitboxY:-8,sound:'kick_heavy',type:'kick',anim:'air_kick'},
+      divekick:{damage:10,startup:3,active:22,recovery:6,knockback:7,hitstun:12,hitboxW:32,hitboxH:45,hitboxX:12,hitboxY:5,sound:'divekick',type:'divekick',anim:'divekick'},
+      throw_atk:{damage:17,startup:3,active:3,recovery:19,knockback:11,hitstun:28,sound:'throw',type:'throw',anim:'throw'},
+      special:{damage:16,startup:10,active:10,recovery:12,knockback:12,hitstun:22,sound:'special',type:'rush',rushDist:150,hitboxW:50,hitboxH:35,hitboxX:25,hitboxY:-35,anim:'rush'},
+    },
+    walkSpeed:3.5, jumpPower:-13, dashSpeed:DASH_SPEED+1,
+    bodyScale:1.05, description:'闇に潜む謎の暗殺者'
   }
 };
 
@@ -466,7 +574,8 @@ class Fighter {
     this.wasDown=false;this._aiDash=false;this.guardShowTimer=0;
   }
   getHurtbox() {
-    const w=this.bodyW,h=this.fstate===FSTATE.CROUCH?this.bodyH*0.6:this.bodyH;
+    const bs=this.data.bodyScale||1;
+    const w=this.bodyW*bs,h=(this.fstate===FSTATE.CROUCH?this.bodyH*0.6:this.bodyH)*bs;
     return {x:this.x-w/2,y:this.y-h,w:w,h:h};
   }
   getAttackHitbox() {
@@ -655,7 +764,9 @@ class Fighter {
 
   // === DRAWING ===
   draw(ctx) {
-    ctx.save();ctx.translate(this.x,this.y);ctx.scale(this.dir,1);
+    ctx.save();ctx.translate(this.x,this.y);
+    const bs=this.data.bodyScale||1;
+    ctx.scale(this.dir*bs,bs);
     const c=this.data.colors;
     if(this.flashTimer>0&&this.flashTimer%2===0) ctx.filter='brightness(3)';
     switch(this.fstate) {
@@ -1113,44 +1224,95 @@ function drawTitle(ctx) {
 
 function drawCharSelect(ctx) {
   ctx.fillStyle='#0a0a18';ctx.fillRect(0,0,W,H);
-  ctx.textAlign='center';ctx.fillStyle='#ffcc44';ctx.font='bold 32px sans-serif';
-  ctx.fillText('CHARACTER SELECT',W/2,50);
-  const chars=Object.keys(CHARACTERS),cardW=200,cardH=280;
-  const startX=W/2-(chars.length*(cardW+30))/2+15;
+  ctx.textAlign='center';ctx.fillStyle='#ffcc44';ctx.font='bold 28px sans-serif';
+  ctx.fillText('CHARACTER SELECT',W/2,35);
+
+  const chars=Object.keys(CHARACTERS);
+  const cols=4, rows=2;
+  const cardW=105, cardH=155, gapX=12, gapY=10;
+  const gridW=cols*cardW+(cols-1)*gapX;
+  const gridH=rows*cardH+(rows-1)*gapY;
+  const ox=(W-gridW)/2, oy=55;
+
   chars.forEach((charId,i)=>{
-    const ch=CHARACTERS[charId],cx=startX+i*(cardW+30)+cardW/2,cy=200;
-    const s1=i===game.selectIndex1,s2=i===game.selectIndex2;
-    ctx.fillStyle=s1||s2?'#1a2240':'#111122';ctx.fillRect(cx-cardW/2,cy-cardH/2,cardW,cardH);
-    if(s1){ctx.strokeStyle='#4488ff';ctx.lineWidth=3;ctx.strokeRect(cx-cardW/2,cy-cardH/2,cardW,cardH);ctx.fillStyle='#4488ff';ctx.font='bold 14px sans-serif';ctx.fillText('▼ YOU',cx,cy-cardH/2+18);}
-    if(s2){ctx.strokeStyle='#ff4444';ctx.lineWidth=3;ctx.strokeRect(cx-cardW/2+4,cy-cardH/2+4,cardW-8,cardH-8);ctx.fillStyle='#ff4444';ctx.font='bold 14px sans-serif';ctx.fillText(game.mode==='pvp'?'P2':'CPU',cx,cy-cardH/2+36);}
-    ctx.save();ctx.translate(cx,cy+20);
+    const col=i%cols, row=Math.floor(i/cols);
+    const cx=ox+col*(cardW+gapX)+cardW/2;
+    const cy=oy+row*(cardH+gapY)+cardH/2;
+    const ch=CHARACTERS[charId];
+    const s1=i===game.selectIndex1, s2=i===game.selectIndex2;
+
+    // Card background
+    ctx.fillStyle=s1?'#1a2a50':s2?'#3a1a20':'#111122';
+    ctx.fillRect(cx-cardW/2,cy-cardH/2,cardW,cardH);
+
+    // Selection borders
+    if(s1){ctx.strokeStyle='#4488ff';ctx.lineWidth=3;ctx.strokeRect(cx-cardW/2,cy-cardH/2,cardW,cardH);
+      ctx.fillStyle='#4488ff';ctx.font='bold 10px sans-serif';ctx.fillText('▼YOU',cx,cy-cardH/2+12);}
+    if(s2){ctx.strokeStyle='#ff4444';ctx.lineWidth=2;ctx.strokeRect(cx-cardW/2+2,cy-cardH/2+2,cardW-4,cardH-4);
+      ctx.fillStyle='#ff4444';ctx.font='bold 10px sans-serif';ctx.fillText(game.mode==='pvp'?'P2':'CPU',cx,cy-cardH/2+(s1?24:12));}
+
+    // Character preview
+    ctx.save();ctx.translate(cx,cy+10);
     const pv=new Fighter(charId,1,0);pv.y=0;pv.animFrame=game.frameCount;
-    const pc=ch.colors,bob=Math.sin(game.frameCount*0.08)*2;
-    ctx.scale(1.5,1.5);
+    const pc=ch.colors, bob=Math.sin(game.frameCount*0.08+i)*1.5;
+    const bs=ch.bodyScale||1;
+    ctx.scale(bs*0.95,bs*0.95);
     pv._drawLimb(ctx,pc.pants,-8,0,-10,18,9);pv._drawLimb(ctx,pc.pants,-10,18,-8,34,8);
     pv._drawLimb(ctx,pc.pants,8,0,10,18,9);pv._drawLimb(ctx,pc.pants,10,18,8,34,8);
     pv._drawBody(ctx,pc,0,-38+bob,28,38);
-    const ab=Math.sin(game.frameCount*0.08+1)*2;
+    const ab=Math.sin(game.frameCount*0.08+1+i)*1.5;
     pv._drawLimb(ctx,pc.gi,-14,-32+bob,-18,-16+ab,7);pv._drawLimb(ctx,pc.skin,-18,-16+ab,-14,-4+ab,6);
     pv._drawLimb(ctx,pc.gi,14,-32+bob,20,-18+ab,7);pv._drawLimb(ctx,pc.skin,20,-18+ab,22,-6+ab,6);
-    pv._drawHead(ctx,pc,0,-52+bob);ctx.restore();
-    ctx.fillStyle='#fff';ctx.font='bold 22px sans-serif';ctx.fillText(ch.name,cx,cy+cardH/2-50);
-    ctx.fillStyle='#aab';ctx.font='16px sans-serif';ctx.fillText(ch.nameJp,cx,cy+cardH/2-28);
-    ctx.font='11px sans-serif';ctx.fillStyle='#667';ctx.fillText(ch.description,cx,cy+cardH/2-8);
+    pv._drawHead(ctx,pc,0,-52+bob);
+    ctx.restore();
+
+    // Name
+    ctx.fillStyle='#fff';ctx.font='bold 13px sans-serif';ctx.fillText(ch.name,cx,cy+cardH/2-28);
+    ctx.fillStyle='#99a';ctx.font='11px sans-serif';ctx.fillText(ch.nameJp,cx,cy+cardH/2-14);
   });
-  // Backstory of selected character
+
+  // Selected character info panel
   const selChar=chars[game.selectIndex1];
-  const backstory=STORY.characters[selChar]?.backstory;
+  const ch=CHARACTERS[selChar];
+  const infoY=oy+gridH+15;
+
+  // Stats bars
+  ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(40,infoY,W-80,H-infoY-45);
+  ctx.strokeStyle='#334';ctx.lineWidth=1;ctx.strokeRect(40,infoY,W-80,H-infoY-45);
+
+  ctx.textAlign='left';
+  ctx.fillStyle='#ffcc44';ctx.font='bold 16px sans-serif';
+  ctx.fillText(`${ch.name} - ${ch.nameJp}`,60,infoY+20);
+  ctx.fillStyle='#889';ctx.font='12px sans-serif';
+  ctx.fillText(ch.description,60,infoY+38);
+
+  // Stat bars
+  const statX=60, statY=infoY+52, barW2=80, barH2=8;
+  const stats=[
+    ['SPD', ch.walkSpeed/5],
+    ['POW', (ch.attacks.heavy.damage)/22],
+    ['RNG', (ch.attacks.special.type==='projectile'?0.9:ch.attacks.special.rushDist?ch.attacks.special.rushDist/200:0.5)],
+    ['DEF', ch.bodyScale>1.1?0.8:ch.bodyScale<0.95?0.4:0.6]
+  ];
+  stats.forEach(([label,val],si)=>{
+    const sx=statX+si*130;
+    ctx.fillStyle='#aab';ctx.font='bold 10px sans-serif';ctx.textAlign='left';
+    ctx.fillText(label,sx,statY);
+    ctx.fillStyle='#222';ctx.fillRect(sx+30,statY-7,barW2,barH2);
+    const bc=val>0.7?'#44cc66':val>0.4?'#ccaa44':'#cc4444';
+    ctx.fillStyle=bc;ctx.fillRect(sx+30,statY-7,barW2*Math.min(val,1),barH2);
+  });
+
+  // Backstory
+  const backstory=typeof STORY!=='undefined'&&STORY.characters[selChar]?.backstory;
   if(backstory){
-    ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(40,H-110,W-80,65);
-    ctx.strokeStyle='#446';ctx.lineWidth=1;ctx.strokeRect(40,H-110,W-80,65);
-    ctx.fillStyle='#ccddee';ctx.font='12px sans-serif';ctx.textAlign='left';
-    const lines=backstory.split('\n');
-    lines.forEach((l,i)=>ctx.fillText(l,55,H-92+i*18));
+    ctx.fillStyle='#99aabb';ctx.font='11px sans-serif';ctx.textAlign='left';
+    const line1=backstory.split('\n')[0];
+    ctx.fillText(line1.substring(0,60)+(line1.length>60?'...':''),60,statY+18);
   }
 
   ctx.textAlign='center';ctx.fillStyle='#445566';ctx.font='14px sans-serif';
-  ctx.fillText('←/→: キャラ選択  Space: 決定  Esc: 戻る',W/2,H-30);
+  ctx.fillText('←/→: キャラ選択  Space: 決定',W/2,H-20);
 }
 
 // === MAIN GAME OBJECT ===
