@@ -260,7 +260,7 @@ const keys = {};
 const keyJustPressed = {};
 const keyPrevState = {};
 // Touch input state
-const touchInput = { left:false,right:false,up:false,down:false,light:false,heavy:false,special:false,throw_btn:false };
+const touchInput = { left:false,right:false,up:false,down:false,light:false,heavy:false,special:false,throw_btn:false,guard:false };
 let isMobile = false;
 
 window.addEventListener('keydown', e => { keys[e.code]=true; if(e.code!=='F5'&&e.code!=='F12') e.preventDefault(); });
@@ -335,6 +335,7 @@ function getP1Input() {
   const u = !!keys['ArrowUp']||ti.up, d = !!keys['ArrowDown']||ti.down;
   const lt = !!keys['Space']||ti.light, hv = !!keys['ShiftLeft']||!!keys['ShiftRight']||ti.heavy;
   const sp = !!keys['KeyZ']||ti.special, th = !!keys['KeyX']||ti.throw_btn;
+  const gd = !!keys['KeyC']||ti.guard; // dedicated guard button
 
   // just pressed for touch
   touchJP.light = lt && !touchPrev.light;
@@ -345,7 +346,7 @@ function getP1Input() {
 
   return {
     left:l, right:r, up:u, down:d,
-    light:lt, heavy:hv, special:sp, throw_btn:th,
+    light:lt, heavy:hv, special:sp, throw_btn:th, guard:gd,
     lightJP: !!keyJustPressed['Space']||touchJP.light,
     heavyJP: !!keyJustPressed['ShiftLeft']||!!keyJustPressed['ShiftRight']||touchJP.heavy,
     specialJP: !!keyJustPressed['KeyZ']||touchJP.special,
@@ -357,29 +358,90 @@ function getP2Input() {
   return {
     left:!!keys['KeyA'], right:!!keys['KeyD'], up:!!keys['KeyW'], down:!!keys['KeyS'],
     light:!!keys['KeyU'], heavy:!!keys['KeyI'], special:!!keys['KeyO'], throw_btn:!!keys['KeyP'],
+    guard:!!keys['KeyH'],
     lightJP:!!keyJustPressed['KeyU'], heavyJP:!!keyJustPressed['KeyI'],
     specialJP:!!keyJustPressed['KeyO'], throwJP:!!keyJustPressed['KeyP'],
   };
 }
 
-// === AI ===
+// === AI (active, varied behavior) ===
 function getAIInput(self,opp,difficulty=0.6) {
-  const inp={left:false,right:false,up:false,down:false,light:false,heavy:false,special:false,throw_btn:false,lightJP:false,heavyJP:false,specialJP:false,throwJP:false};
-  const dist=Math.abs(self.x-opp.x), fr=self.x<opp.x;
-  if(Math.random()>difficulty*0.3){if(dist>200){if(fr)inp.right=true;else inp.left=true;}else if(dist<80&&Math.random()<0.3){if(fr)inp.left=true;else inp.right=true;}}
+  const inp={left:false,right:false,up:false,down:false,light:false,heavy:false,special:false,throw_btn:false,guard:false,lightJP:false,heavyJP:false,specialJP:false,throwJP:false};
+  const dist=Math.abs(self.x-opp.x);
+  const fr=self.x<opp.x; // facing right?
   const canAct=self.fstate===FSTATE.IDLE||self.fstate===FSTATE.WALK_F||self.fstate===FSTATE.WALK_B;
-  if(canAct){
-    if(dist<60&&Math.random()<difficulty*0.03){inp.throw_btn=true;inp.throwJP=true;}
-    if(dist<100&&Math.random()<difficulty*0.08){inp.light=true;inp.lightJP=true;}
-    if(dist<120&&Math.random()<difficulty*0.04){inp.heavy=true;inp.heavyJP=true;}
-    if(dist<100&&Math.random()<difficulty*0.02){inp.down=true;inp.heavy=true;inp.heavyJP=true;}
-    if(dist>150&&dist<400&&Math.random()<difficulty*0.02){inp.special=true;inp.specialJP=true;}
-    if(opp.fstate===FSTATE.JUMP&&dist<150&&Math.random()<difficulty*0.08){inp.down=true;inp.light=true;inp.lightJP=true;}
-    if(dist>200&&Math.random()<difficulty*0.01)self._aiDash=true;
+  const r=Math.random;
+
+  // --- MOVEMENT: always be doing something ---
+  if(canAct) {
+    const moveRoll=r();
+    if(moveRoll < 0.35) {
+      // Approach opponent
+      if(fr) inp.right=true; else inp.left=true;
+    } else if(moveRoll < 0.50) {
+      // Retreat
+      if(fr) inp.left=true; else inp.right=true;
+    } else if(moveRoll < 0.58) {
+      // Sidestep / reposition randomly
+      if(r()<0.5) inp.left=true; else inp.right=true;
+    }
+    // else: stand still briefly
   }
-  if(opp.fstate===FSTATE.ATTACK&&dist<130&&Math.random()<difficulty*0.5){if(fr)inp.left=true;else inp.right=true;}
-  if(Math.random()<0.004*difficulty)inp.up=true;
-  if(self.fstate===FSTATE.JUMP&&self.vy>0&&dist<120&&Math.random()<difficulty*0.06){inp.down=true;inp.heavy=true;inp.heavyJP=true;}
+
+  // --- JUMPING: frequent, varied ---
+  if(canAct) {
+    if(r() < 0.025 * difficulty) {
+      inp.up=true;
+      // Jump forward/backward randomly
+      if(r()<0.6){if(fr)inp.right=true;else inp.left=true;}
+      else if(r()<0.3){if(fr)inp.left=true;else inp.right=true;}
+    }
+    // Jump over opponent when very close (position swap)
+    if(dist<80 && r()<0.015*difficulty) {
+      inp.up=true;
+      if(fr) inp.right=true; else inp.left=true;
+    }
+  }
+
+  // --- ATTACKS ---
+  if(canAct) {
+    if(dist<60 && r()<difficulty*0.04) { inp.throw_btn=true;inp.throwJP=true; }
+    if(dist<100 && r()<difficulty*0.10) { inp.light=true;inp.lightJP=true; }
+    if(dist<130 && r()<difficulty*0.06) { inp.heavy=true;inp.heavyJP=true; }
+    // Sweep
+    if(dist<110 && r()<difficulty*0.025) { inp.down=true;inp.heavy=true;inp.heavyJP=true; }
+    // Special move
+    if(dist>120 && dist<450 && r()<difficulty*0.03) { inp.special=true;inp.specialJP=true; }
+    // Anti-air uppercut
+    if(opp.fstate===FSTATE.JUMP && dist<160 && r()<difficulty*0.12) { inp.down=true;inp.light=true;inp.lightJP=true; }
+    // Dash in for pressure
+    if(dist>180 && r()<difficulty*0.02) self._aiDash=true;
+    // Crouch sometimes
+    if(r()<0.01) inp.down=true;
+  }
+
+  // --- AIR ACTIONS ---
+  if(self.fstate===FSTATE.JUMP) {
+    // Air attack when descending near opponent
+    if(self.vy>0 && dist<140) {
+      if(r()<difficulty*0.12){inp.light=true;inp.lightJP=true;}
+      else if(r()<difficulty*0.06){inp.heavy=true;inp.heavyJP=true;}
+    }
+    // Dive kick
+    if(self.vy>-2 && dist<130 && r()<difficulty*0.08) {
+      inp.down=true;inp.heavy=true;inp.heavyJP=true;
+    }
+  }
+
+  // --- GUARD: react to opponent's attacks ---
+  if(opp.fstate===FSTATE.ATTACK && dist<150 && r()<difficulty*0.6) {
+    inp.guard=true;
+  }
+  // Guard projectiles
+  if(game.projectiles.some(p=>p.owner!==self.playerNum && Math.abs(p.x-self.x)<200)) {
+    if(r()<difficulty*0.7) inp.guard=true;
+  }
+
   return inp;
 }
 
@@ -689,6 +751,12 @@ class Fighter {
 
   _handleMovement(input) {
     this.vx=0;
+    // Guard button = enter guard stance (can't move)
+    if(input.guard){
+      this.fstate=FSTATE.IDLE; // stay still, isBlockingAttack will handle the rest
+      this.vx=0;
+      return;
+    }
     const fwd=(this.dir===1&&input.right)||(this.dir===-1&&input.left);
     const bwd=(this.dir===1&&input.left)||(this.dir===-1&&input.right);
     if(fwd){this.vx=this.data.walkSpeed*this.dir;this.fstate=FSTATE.WALK_F;}
@@ -761,8 +829,10 @@ class Fighter {
 
   isBlockingAttack(attackerDir) {
     if(this.fstate===FSTATE.HIT||this.fstate===FSTATE.KNOCKDOWN||this.fstate===FSTATE.ATTACK||this.fstate===FSTATE.THROW||this.fstate===FSTATE.THROWN||this.fstate===FSTATE.DASH_F||this.fstate===FSTATE.DASH_B)return false;
-    // Blocking = holding direction away from attacker
     const ci=this.currentInput||{};const pi=this.prevInput||{};
+    // Guard button (C key / touch guard) = always blocks
+    if(ci.guard||pi.guard) return true;
+    // Back direction = traditional block
     const holdBack = (attackerDir>0&&(ci.left||pi.left)) || (attackerDir<0&&(ci.right||pi.right));
     return this.fstate===FSTATE.WALK_B || this.fstate===FSTATE.BLOCK ||
       ((this.fstate===FSTATE.IDLE||this.fstate===FSTATE.CROUCH) && holdBack);
@@ -776,7 +846,9 @@ class Fighter {
     const c=this.data.colors;
     if(this.flashTimer>0&&this.flashTimer%2===0) ctx.filter='brightness(3)';
     switch(this.fstate) {
-      case FSTATE.IDLE:this._drawIdle(ctx,c);break;
+      case FSTATE.IDLE:
+        if((this.currentInput&&this.currentInput.guard)){this._drawBlock(ctx,c);}
+        else{this._drawIdle(ctx,c);}break;
       case FSTATE.WALK_F:this._drawWalk(ctx,c,1);break;
       case FSTATE.WALK_B:this._drawWalk(ctx,c,-1);break;
       case FSTATE.JUMP:this._drawJump(ctx,c);break;
@@ -1506,7 +1578,7 @@ function drawHUD(ctx) {
   if(!isMobile){
     ctx.fillStyle='rgba(255,255,255,0.2)';ctx.font='10px monospace';ctx.textAlign='left';
     if(game.mode==='training'){
-      ctx.fillText('Space:パンチ Shift:キック Z:必殺 X:投げ ←:ガード ↓+Shift:足払い しゃがみ↑+Space:アッパー 空中↓+Shift:急降下 →→:ダッシュ ←←:バクステ',60,GROUND_Y+15);
+      ctx.fillText('Space:パンチ Shift:キック Z:必殺 X:投げ C:防御 ↓+Shift:足払い ↑+Space:アッパー 空中↓+Shift:急降下 →→:ダッシュ',60,GROUND_Y+15);
       // Training info panel
       ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(W-200,GROUND_Y+5,190,H-GROUND_Y-10);
       ctx.fillStyle='#aab';ctx.font='11px sans-serif';ctx.textAlign='left';
@@ -1517,7 +1589,7 @@ function drawHUD(ctx) {
         '','Esc: ポーズ/技表'];
       info.forEach((l,i)=>ctx.fillText(l,W-190,GROUND_Y+22+i*16));
     } else {
-      ctx.fillText('Space:パンチ Shift:キック Z:必殺 X:投げ ←:ガード  Esc:ポーズ',60,GROUND_Y+15);
+      ctx.fillText('Space:パンチ Shift:キック Z:必殺 X:投げ C:防御  Esc:ポーズ',60,GROUND_Y+15);
     }
   }
 }
@@ -2200,7 +2272,7 @@ const game = {
             'しゃがみ中 ↑+Space: アッパーカット (打ち上げ)',
             '空中 ↓+Shift: 急降下キック',
             '→→: ダッシュ  ←←: バックステップ',
-            '←(相手と反対方向): ガード',
+            'C: 防御 (←後ろ入力でもOK)',
             '',
             'Esc / P: 再開'
           ];

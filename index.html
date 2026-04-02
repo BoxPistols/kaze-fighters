@@ -92,6 +92,8 @@
   .btn-heavy { background: rgba(255,66,66,0.2); border-color: rgba(255,66,66,0.5); }
   .btn-special { background: rgba(255,204,0,0.2); border-color: rgba(255,204,0,0.5); }
   .btn-throw { background: rgba(0,200,100,0.2); border-color: rgba(0,200,100,0.5); }
+  .btn-guard { background: rgba(100,180,255,0.25); border-color: rgba(100,180,255,0.6); }
+  .action-buttons.three-col { grid-template-columns: 1fr 1fr 1fr; }
 
   /* Name input overlay */
   #nameOverlay {
@@ -155,9 +157,10 @@
     </div>
   </div>
   <div class="touch-area">
-    <div class="action-buttons">
+    <div class="action-buttons three-col">
       <div class="action-btn btn-light" data-action="light">パンチ</div>
       <div class="action-btn btn-heavy" data-action="heavy">キック</div>
+      <div class="action-btn btn-guard" data-action="guard">防御</div>
       <div class="action-btn btn-special" data-action="special">必殺</div>
       <div class="action-btn btn-throw" data-action="throw_btn">投げ</div>
     </div>
