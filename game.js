@@ -1125,13 +1125,20 @@ class Fighter {
     }
   }
   _drawWalk(ctx,c,d) {
-    const s=Math.sin(this.animFrame*0.15)*10;
-    this._drawLimb(ctx,c.pants,-6,0,-6+s,18,9);this._drawLimb(ctx,c.pants,-6+s,18,-6+s*0.5,34,8);this._drawFoot(ctx,c,-6+s*0.5,34);
-    this._drawLimb(ctx,c.pants,6,0,6-s,18,9);this._drawLimb(ctx,c.pants,6-s,18,6-s*0.5,34,8);this._drawFoot(ctx,c,6-s*0.5,34);
-    this._drawBody(ctx,c,0,-38,28,38);
-    this._drawLimb(ctx,c.gi,-14,-32,-18-s*0.5,-16,7);this._drawLimb(ctx,c.skin,-18-s*0.5,-16,-14-s*0.3,-4,6);this._drawFist(ctx,c,-14-s*0.3,-4);
-    this._drawLimb(ctx,c.gi,14,-32,20+s*0.5,-18,7);this._drawLimb(ctx,c.skin,20+s*0.5,-18,22+s*0.3,-6,6);this._drawFist(ctx,c,22+s*0.3,-6);
-    this._drawHead(ctx,c,0,-52);
+    const id=this.charId;
+    // Heavy chars walk slower/wider, light chars walk faster/tighter
+    const spd = (id==='gouki'||id==='tetsu') ? 0.10 : (id==='ren'||id==='akane'||id==='yuki') ? 0.20 : 0.15;
+    const amp = (id==='gouki'||id==='tetsu') ? 12 : (id==='ren'||id==='akane') ? 8 : 10;
+    const lw = (id==='gouki'||id==='tetsu') ? 11 : (id==='hikari'||id==='yuki') ? 7 : 9;
+    const s=Math.sin(this.animFrame*spd)*amp;
+    // Body sway for heavy chars
+    const sway = (id==='gouki'||id==='tetsu') ? Math.sin(this.animFrame*spd)*1.5 : 0;
+    this._drawLimb(ctx,c.pants,-6,0,-6+s,18,lw);this._drawLimb(ctx,c.pants,-6+s,18,-6+s*0.5,34,lw-1);this._drawFoot(ctx,c,-6+s*0.5,34);
+    this._drawLimb(ctx,c.pants,6,0,6-s,18,lw);this._drawLimb(ctx,c.pants,6-s,18,6-s*0.5,34,lw-1);this._drawFoot(ctx,c,6-s*0.5,34);
+    this._drawBody(ctx,c,sway,-38,28,38);
+    this._drawLimb(ctx,c.gi,-14,-32,-18-s*0.5,-16,lw-2);this._drawLimb(ctx,c.skin,-18-s*0.5,-16,-14-s*0.3,-4,lw-3);this._drawFist(ctx,c,-14-s*0.3,-4);
+    this._drawLimb(ctx,c.gi,14,-32,20+s*0.5,-18,lw-2);this._drawLimb(ctx,c.skin,20+s*0.5,-18,22+s*0.3,-6,lw-3);this._drawFist(ctx,c,22+s*0.3,-6);
+    this._drawHead(ctx,c,sway,-52);
   }
   _drawJump(ctx,c) {
     this._drawLimb(ctx,c.pants,-8,0,-15,8,9);this._drawLimb(ctx,c.pants,-15,8,-10,16,8);this._drawFoot(ctx,c,-10,16);
@@ -1589,19 +1596,12 @@ function drawCharSelect(ctx) {
     if(s2){ctx.strokeStyle='#ff4444';ctx.lineWidth=2;ctx.strokeRect(cx-cardW/2+2,cy-cardH/2+2,cardW-4,cardH-4);
       ctx.fillStyle='#ff4444';ctx.font='bold 10px sans-serif';ctx.fillText(game.mode==='pvp'?'P2':'CPU',cx,cy-cardH/2+(s1?24:12));}
 
-    // Character preview
+    // Character preview - uses unique idle pose
     ctx.save();ctx.translate(cx,cy+10);
-    const pv=new Fighter(charId,1,0);pv.y=0;pv.animFrame=game.frameCount;
-    const pc=ch.colors, bob=Math.sin(game.frameCount*0.08+i)*1.5;
+    const pv=new Fighter(charId,1,0);pv.y=0;pv.animFrame=game.frameCount+i*10;
     const bs=ch.bodyScale||1;
-    ctx.scale(bs*0.95,bs*0.95);
-    pv._drawLimb(ctx,pc.pants,-8,0,-10,18,9);pv._drawLimb(ctx,pc.pants,-10,18,-8,34,8);
-    pv._drawLimb(ctx,pc.pants,8,0,10,18,9);pv._drawLimb(ctx,pc.pants,10,18,8,34,8);
-    pv._drawBody(ctx,pc,0,-38+bob,28,38);
-    const ab=Math.sin(game.frameCount*0.08+1+i)*1.5;
-    pv._drawLimb(ctx,pc.gi,-14,-32+bob,-18,-16+ab,7);pv._drawLimb(ctx,pc.skin,-18,-16+ab,-14,-4+ab,6);
-    pv._drawLimb(ctx,pc.gi,14,-32+bob,20,-18+ab,7);pv._drawLimb(ctx,pc.skin,20,-18+ab,22,-6+ab,6);
-    pv._drawHead(ctx,pc,0,-52+bob);
+    ctx.scale(bs*0.85,bs*0.85);
+    pv._drawIdle(ctx,ch.colors);
     ctx.restore();
 
     // Name
