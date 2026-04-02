@@ -822,20 +822,202 @@ class Fighter {
   // ---- DRAWING HELPERS ----
   _drawHead(ctx,c,x,y,tilt=0) {
     ctx.save();ctx.translate(x,y);ctx.rotate(tilt);
-    ctx.fillStyle=c.headband;ctx.fillRect(-11,-13,22,6);ctx.fillRect(-14,-13,4,12);
+    const id=this.charId;
+    // Face base
     ctx.fillStyle=c.skin;ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle=c.hair;ctx.beginPath();ctx.arc(0,-3,11,Math.PI,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#111';ctx.fillRect(3,-2,3,3);ctx.fillRect(-2,-2,3,3);
-    ctx.fillRect(2,-5,5,2);ctx.fillRect(-3,-5,5,2);ctx.restore();
+
+    // Per-character hair & features
+    if(id==='kaito'){
+      // Short dark hair + red headband with tail
+      ctx.fillStyle=c.hair;ctx.beginPath();ctx.arc(0,-3,11,Math.PI,Math.PI*2);ctx.fill();
+      ctx.fillStyle=c.headband;ctx.fillRect(-12,-13,24,5);ctx.fillRect(-15,-13,4,14);
+    } else if(id==='akane'){
+      // Long red ponytail + yellow headband
+      ctx.fillStyle=c.hair;ctx.beginPath();ctx.arc(0,-3,11,Math.PI,Math.PI*2);ctx.fill();
+      // Ponytail flowing back
+      ctx.fillStyle=c.hair;
+      ctx.beginPath();ctx.moveTo(-8,0);ctx.quadraticCurveTo(-16,8,-14,22);
+      ctx.quadraticCurveTo(-12,24,-8,18);ctx.quadraticCurveTo(-6,8,-6,0);ctx.fill();
+      ctx.fillStyle=c.headband;ctx.fillRect(-12,-12,24,4);
+      // Hair bangs
+      ctx.fillStyle=c.hair;ctx.fillRect(4,-10,6,8);
+    } else if(id==='gouki'){
+      // Wild spiked-up hair, thick brows, fierce look
+      ctx.fillStyle=c.hair;
+      ctx.beginPath();ctx.moveTo(-10,-4);ctx.lineTo(-12,-18);ctx.lineTo(-6,-10);
+      ctx.lineTo(-3,-22);ctx.lineTo(0,-10);ctx.lineTo(4,-20);ctx.lineTo(6,-8);
+      ctx.lineTo(10,-16);ctx.lineTo(11,-4);ctx.arc(0,-3,11,0,Math.PI,true);ctx.fill();
+      // Thick angry brows
+      ctx.fillStyle='#111';ctx.lineWidth=3;ctx.strokeStyle='#111';
+      ctx.beginPath();ctx.moveTo(-6,-6);ctx.lineTo(-1,-8);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(2,-8);ctx.lineTo(7,-6);ctx.stroke();
+      // Scar
+      ctx.strokeStyle='#aa6666';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(5,-4);ctx.lineTo(8,4);ctx.stroke();
+    } else if(id==='hikari'){
+      // Long flowing blonde hair + golden tiara
+      ctx.fillStyle=c.hair;ctx.beginPath();ctx.arc(0,-3,11,Math.PI,Math.PI*2);ctx.fill();
+      // Long hair flowing both sides
+      ctx.fillStyle=c.hair;
+      ctx.beginPath();ctx.moveTo(-10,-2);ctx.quadraticCurveTo(-14,10,-12,26);
+      ctx.lineTo(-8,24);ctx.quadraticCurveTo(-8,8,-8,-2);ctx.fill();
+      ctx.beginPath();ctx.moveTo(10,-2);ctx.quadraticCurveTo(14,10,12,26);
+      ctx.lineTo(8,24);ctx.quadraticCurveTo(8,8,8,-2);ctx.fill();
+      // Golden tiara
+      ctx.fillStyle='#ffdd44';
+      ctx.beginPath();ctx.moveTo(-8,-12);ctx.lineTo(-5,-18);ctx.lineTo(-2,-12);
+      ctx.lineTo(0,-16);ctx.lineTo(2,-12);ctx.lineTo(5,-18);ctx.lineTo(8,-12);ctx.fill();
+      // Gentle eyes
+      ctx.fillStyle='#4488cc';ctx.fillRect(3,-2,3,2);ctx.fillRect(-2,-2,3,2);
+      ctx.restore();return;
+    } else if(id==='tetsu'){
+      // Bald/buzz cut + scars + jaw
+      ctx.fillStyle=c.hair;
+      ctx.beginPath();ctx.arc(0,-4,10.5,Math.PI,Math.PI*2);ctx.fill();
+      // Stubble effect
+      ctx.fillStyle='rgba(100,100,100,0.3)';
+      ctx.fillRect(-6,2,12,6);
+      // Scar across eye
+      ctx.strokeStyle='#cc8888';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(-8,-6);ctx.lineTo(-2,4);ctx.stroke();
+      // Shoulder armor hint
+      ctx.fillStyle='#667788';
+      ctx.fillRect(-16,8,6,4);ctx.fillRect(10,8,6,4);
+    } else if(id==='yuki'){
+      // Long flowing white/ice hair + scarf
+      ctx.fillStyle=c.hair;ctx.beginPath();ctx.arc(0,-3,11,Math.PI,Math.PI*2);ctx.fill();
+      // Flowing long hair
+      const wave=Math.sin(this.animFrame*0.1)*3;
+      ctx.fillStyle=c.hair;
+      ctx.beginPath();ctx.moveTo(-9,0);ctx.quadraticCurveTo(-12+wave,12,-10+wave,28);
+      ctx.lineTo(-6+wave,26);ctx.quadraticCurveTo(-7,10,-7,0);ctx.fill();
+      ctx.beginPath();ctx.moveTo(9,0);ctx.quadraticCurveTo(12+wave,12,10+wave,28);
+      ctx.lineTo(6+wave,26);ctx.quadraticCurveTo(7,10,7,0);ctx.fill();
+      // Ice crystal headpiece
+      ctx.fillStyle='#aaeeff';
+      ctx.beginPath();ctx.moveTo(0,-16);ctx.lineTo(-3,-11);ctx.lineTo(0,-13);ctx.lineTo(3,-11);ctx.closePath();ctx.fill();
+      // Scarf
+      ctx.fillStyle=c.headband;
+      ctx.beginPath();ctx.moveTo(-6,6);ctx.quadraticCurveTo(-10+wave,14,-8+wave,22);
+      ctx.lineTo(-5+wave,20);ctx.quadraticCurveTo(-7,12,-4,6);ctx.fill();
+    } else if(id==='ren'){
+      // Spiky upward hair + green headband
+      ctx.fillStyle=c.hair;
+      ctx.beginPath();ctx.moveTo(-9,-4);ctx.lineTo(-7,-16);ctx.lineTo(-4,-6);
+      ctx.lineTo(-1,-18);ctx.lineTo(1,-6);ctx.lineTo(4,-16);ctx.lineTo(7,-4);
+      ctx.lineTo(9,-14);ctx.lineTo(10,-3);ctx.arc(0,-3,11,0,Math.PI,true);ctx.fill();
+      ctx.fillStyle=c.headband;ctx.fillRect(-12,-10,24,4);
+      // Confident grin
+      ctx.strokeStyle='#111';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.arc(0,3,4,0.1,Math.PI-0.1);ctx.stroke();
+    } else if(id==='maki'){
+      // Hood + face mask, only eyes visible
+      ctx.fillStyle=c.hair;ctx.beginPath();ctx.arc(0,-3,13,Math.PI,Math.PI*2);ctx.fill();
+      // Hood drape sides
+      ctx.fillStyle=c.gi;
+      ctx.beginPath();ctx.moveTo(-12,-6);ctx.quadraticCurveTo(-15,4,-13,12);
+      ctx.lineTo(-10,10);ctx.quadraticCurveTo(-11,2,-10,-4);ctx.fill();
+      ctx.beginPath();ctx.moveTo(12,-6);ctx.quadraticCurveTo(15,4,13,12);
+      ctx.lineTo(10,10);ctx.quadraticCurveTo(11,2,10,-4);ctx.fill();
+      // Face mask (covers lower face)
+      ctx.fillStyle='#222';ctx.fillRect(-8,0,16,8);
+      // Only eyes visible - glowing
+      ctx.fillStyle=c.headband;ctx.fillRect(3,-3,4,3);ctx.fillRect(-3,-3,4,3);
+      ctx.restore();return;
+    }
+
+    // Eyes
+    if(id==='gouki'){
+      // Red glowing eyes
+      ctx.fillStyle='#ff2200';ctx.fillRect(3,-3,4,3);ctx.fillRect(-3,-3,4,3);
+    } else if(id==='ren'){
+      // Already has grin drawn above, just eyes
+      ctx.fillStyle='#111';ctx.fillRect(3,-2,3,3);ctx.fillRect(-2,-2,3,3);
+    } else {
+      ctx.fillStyle='#111';ctx.fillRect(3,-2,3,3);ctx.fillRect(-2,-2,3,3);
+    }
+    ctx.restore();
   }
+
   _drawBody(ctx,c,x,y,w,h) {
-    ctx.fillStyle=c.gi;ctx.fillRect(x-w/2,y,w,h);
-    ctx.fillStyle=c.giLight;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+w/3,y);ctx.lineTo(x+2,y+h*0.4);ctx.lineTo(x-w/3,y);ctx.closePath();ctx.fill();
-    ctx.fillStyle=c.belt;ctx.fillRect(x-w/2,y+h*0.65,w,4);
+    const id=this.charId;
+    ctx.fillStyle=c.gi;
+
+    if(id==='hikari'){
+      // Robe/dress style - flared at bottom
+      ctx.beginPath();ctx.moveTo(x-w/2,y);ctx.lineTo(x+w/2,y);
+      ctx.lineTo(x+w/2+4,y+h);ctx.lineTo(x-w/2-4,y+h);ctx.closePath();ctx.fill();
+      // Sash
+      ctx.fillStyle=c.belt;
+      ctx.beginPath();ctx.moveTo(x-w/2,y+h*0.5);ctx.lineTo(x+w/2,y+h*0.5);
+      ctx.lineTo(x+w/2+2,y+h*0.5+5);ctx.lineTo(x-w/2-2,y+h*0.5+5);ctx.fill();
+      // Light symbol
+      ctx.fillStyle='rgba(255,238,136,0.4)';
+      ctx.beginPath();ctx.arc(x,y+h*0.3,6,0,Math.PI*2);ctx.fill();
+    } else if(id==='tetsu'){
+      // Armored torso - wider, with plates
+      ctx.fillRect(x-w/2-3,y,w+6,h);
+      // Armor plates
+      ctx.fillStyle=c.giLight;
+      ctx.fillRect(x-w/2-3,y,w+6,h*0.3);
+      ctx.strokeStyle='#556';ctx.lineWidth=1;
+      ctx.strokeRect(x-w/2-3,y,w+6,h*0.3);
+      ctx.strokeRect(x-w/2-3,y+h*0.3,w+6,h*0.35);
+      ctx.fillStyle=c.belt;ctx.fillRect(x-w/2-3,y+h*0.65,w+6,5);
+    } else if(id==='maki'){
+      // Slim dark body with cape
+      ctx.fillRect(x-w/2,y,w,h);
+      // Cape behind (drawn as side flaps)
+      ctx.fillStyle=c.giLight;
+      ctx.beginPath();ctx.moveTo(x-w/2-2,y+2);
+      ctx.quadraticCurveTo(x-w/2-8,y+h*0.5,x-w/2-5,y+h+5);
+      ctx.lineTo(x-w/2,y+h);ctx.lineTo(x-w/2,y);ctx.fill();
+      ctx.fillStyle=c.belt;ctx.fillRect(x-w/2,y+h*0.65,w,3);
+    } else if(id==='gouki'){
+      // Wider muscular torso
+      ctx.beginPath();ctx.moveTo(x-w/2-4,y);ctx.lineTo(x+w/2+4,y);
+      ctx.lineTo(x+w/2+2,y+h);ctx.lineTo(x-w/2-2,y+h);ctx.closePath();ctx.fill();
+      ctx.fillStyle=c.giLight;
+      // V-neck deep cut
+      ctx.beginPath();ctx.moveTo(x-2,y);ctx.lineTo(x+w/3+2,y);ctx.lineTo(x+2,y+h*0.5);ctx.lineTo(x-w/3-2,y);ctx.closePath();ctx.fill();
+      ctx.fillStyle=c.belt;ctx.fillRect(x-w/2-4,y+h*0.65,w+8,5);
+      // Shoulder pads
+      ctx.fillStyle=c.gi;
+      ctx.beginPath();ctx.arc(x-w/2-4,y+2,6,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(x+w/2+4,y+2,6,0,Math.PI*2);ctx.fill();
+    } else {
+      // Default gi body
+      ctx.fillRect(x-w/2,y,w,h);
+      ctx.fillStyle=c.giLight;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+w/3,y);ctx.lineTo(x+2,y+h*0.4);ctx.lineTo(x-w/3,y);ctx.closePath();ctx.fill();
+      ctx.fillStyle=c.belt;ctx.fillRect(x-w/2,y+h*0.65,w,4);
+    }
   }
+
   _drawLimb(ctx,color,x1,y1,x2,y2,w) { ctx.strokeStyle=color;ctx.lineWidth=w;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke(); }
-  _drawFist(ctx,c,x,y) { ctx.fillStyle=c.skin;ctx.fillRect(x-4,y-4,8,8); }
-  _drawFoot(ctx,c,x,y) { ctx.fillStyle='#443322';ctx.fillRect(x-3,y-3,10,6); }
+  _drawFist(ctx,c,x,y) {
+    ctx.fillStyle=c.skin;
+    if(this.charId==='tetsu'){
+      // Armored gauntlet
+      ctx.fillStyle=c.gi;ctx.fillRect(x-5,y-5,10,10);
+      ctx.fillStyle='#889';ctx.fillRect(x-4,y-4,8,3);
+    } else {
+      ctx.fillRect(x-4,y-4,8,8);
+    }
+  }
+  _drawFoot(ctx,c,x,y) {
+    if(this.charId==='hikari'){
+      // Sandals
+      ctx.fillStyle='#cc9944';ctx.fillRect(x-3,y-2,8,4);
+    } else if(this.charId==='tetsu'){
+      // Heavy boots
+      ctx.fillStyle='#445';ctx.fillRect(x-4,y-4,12,8);
+    } else if(this.charId==='maki'){
+      // Dark boots
+      ctx.fillStyle='#1a0a1a';ctx.fillRect(x-3,y-3,10,6);
+    } else {
+      ctx.fillStyle='#443322';ctx.fillRect(x-3,y-3,10,6);
+    }
+  }
 
   _drawIdle(ctx,c) {
     const b=Math.sin(this.animFrame*0.08)*2;
