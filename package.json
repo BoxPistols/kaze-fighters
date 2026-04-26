@@ -1,0 +1,15 @@
+{
+  "name": "kaze-fighters",
+  "private": true,
+  "version": "1.0.0",
+  "description": "風のファイターズ — 2D Fighting Game",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && cp game.js story.js dist/",
+    "preview": "vite preview --port 4173"
+  },
+  "devDependencies": {
+    "vite": "^5.4.10"
+  },
+  "packageManager": "pnpm@9.12.0"
+}

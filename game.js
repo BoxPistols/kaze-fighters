@@ -2406,6 +2406,32 @@ function _drawWinGem(ctx,cx,cy,r,filled){
   }
 }
 
+// === ストーリー名前ヘルパー ===
+// プレイヤーが選んだキャラの speaker ID
+function _playerCharId(){
+  return Object.keys(CHARACTERS)[game.selectIndex1];
+}
+// 入力名があればそれ、なければキャラ data.name
+function _playerSpeakerName(){
+  const ch=CHARACTERS[_playerCharId()];
+  return (game.p1Name&&game.p1Name.trim())||ch.name;
+}
+// ダイアログ speaker → 表示名（自分なら入力名、それ以外はキャラ名）
+function _resolveSpeakerName(speakerId){
+  if(speakerId===_playerCharId()) return _playerSpeakerName();
+  return CHARACTERS[speakerId]?.name||'';
+}
+// ストーリーテキスト中の自キャラ名表記をプレイヤー名に置換
+function _personalize(text){
+  if(!game.p1Name||!game.p1Name.trim()) return text;
+  const ch=CHARACTERS[_playerCharId()];
+  if(!ch) return text;
+  const name=game.p1Name.trim();
+  return text
+    .replaceAll(ch.nameJp, name)
+    .replaceAll(ch.name, name);
+}
+
 // === TEXT RENDERER (for story/dialogue) ===
 function drawTextBox(ctx,text,speaker,progress) {
   const x=40,y=H-170,w=W-80,h=130;
@@ -3563,15 +3589,14 @@ const game = {
         ctx.fillStyle='#0a0a18';ctx.fillRect(0,0,W,H);
         ctx.textAlign='center';ctx.fillStyle='#ffcc44';ctx.font='bold 28px sans-serif';
         ctx.fillText('風神武闘会',W/2,100);
-        drawTextBox(ctx,this.storyTextTarget,'',this.storyTextProgress);
+        drawTextBox(ctx,_personalize(this.storyTextTarget),'',this.storyTextProgress);
         break;
       }
       case STATE.DIALOGUE: {
         drawBackground(ctx);this.p1.draw(ctx);this.p2.draw(ctx);
         const dl=STORY.rivalDialogue[this.storyDialogueIndex];
         if(dl){
-          const charData=CHARACTERS[dl.speaker];
-          drawTextBox(ctx,dl.text,charData?charData.name:'',this.storyTextProgress);
+          drawTextBox(ctx,_personalize(dl.text),_resolveSpeakerName(dl.speaker),this.storyTextProgress);
         }
         break;
       }
@@ -3772,9 +3797,15 @@ const game = {
         ctx.textAlign='center';ctx.fillStyle='#ffcc44';ctx.font='bold 28px sans-serif';
         ctx.fillText('ENDING',W/2,80);
         const charId=Object.keys(CHARACTERS)[this.selectIndex1];
+        const ch=CHARACTERS[charId];
+        const playerName=(this.p1Name&&this.p1Name.trim())||ch.name;
         ctx.fillStyle='#8899bb';ctx.font='18px sans-serif';
-        ctx.fillText(CHARACTERS[charId].nameJp,W/2,115);
-        drawTextBox(ctx,this.storyTextTarget,'',this.storyTextProgress);
+        // 入力名がある場合: 「ATSU （カイト として）」、なければキャラ名のみ
+        const subText=this.p1Name&&this.p1Name.trim()
+          ? `${playerName}　（${ch.nameJp} として）`
+          : ch.nameJp;
+        ctx.fillText(subText,W/2,115);
+        drawTextBox(ctx,_personalize(this.storyTextTarget),'',this.storyTextProgress);
         break;
       }
       case STATE.TOURNAMENT_BRACKET:
