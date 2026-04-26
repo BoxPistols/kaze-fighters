@@ -17,7 +17,7 @@
     width: 100%; height: 100%;
     background: #000;
     overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', sans-serif;
     touch-action: none;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -29,12 +29,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #000;
+    background: radial-gradient(ellipse at center, #0a0a14 0%, #000 80%);
   }
   canvas {
     display: block;
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06);
+    transform: translateZ(0); /* GPU レイヤー化で多重コンポジット問題回避 */
   }
   /* Touch controls overlay */
   #touchControls {
@@ -56,18 +58,36 @@
   }
   .dpad-btn {
     position: absolute;
-    width: clamp(44px, 8vw, 58px);
-    height: clamp(44px, 8vw, 58px);
-    background: rgba(255,255,255,0.15);
-    border: 2px solid rgba(255,255,255,0.3);
-    border-radius: 12px;
+    width: clamp(48px, 9vw, 62px);
+    height: clamp(48px, 9vw, 62px);
+    background:
+      radial-gradient(circle at 35% 30%, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0) 55%),
+      linear-gradient(160deg, rgba(40,55,90,0.55), rgba(15,18,30,0.65));
+    border: 1px solid rgba(180,200,240,0.35);
+    border-radius: 16px;
     display: flex; align-items: center; justify-content: center;
-    color: rgba(255,255,255,0.6);
+    color: rgba(225,235,255,0.85);
     font-size: clamp(18px, 3.5vw, 24px);
     pointer-events: auto;
     -webkit-tap-highlight-color: transparent;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.18),
+      inset 0 -2px 4px rgba(0,0,0,0.45),
+      0 4px 10px rgba(0,0,0,0.5);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: transform 0.05s ease, box-shadow 0.1s ease;
   }
-  .dpad-btn.active { background: rgba(255,255,255,0.35); border-color: rgba(255,255,255,0.6); }
+  .dpad-btn.active {
+    background:
+      radial-gradient(circle at 35% 30%, rgba(120,170,255,0.6) 0%, rgba(80,130,220,0.3) 55%),
+      linear-gradient(160deg, rgba(80,120,200,0.7), rgba(40,60,120,0.7));
+    border-color: rgba(160,200,255,0.85);
+    box-shadow:
+      inset 0 2px 6px rgba(0,0,0,0.5),
+      0 0 18px rgba(100,160,255,0.55);
+    transform: scale(0.94);
+  }
   .dpad-up { top: 0; left: 50%; transform: translateX(-50%); }
   .dpad-down { bottom: 0; left: 50%; transform: translateX(-50%); }
   .dpad-left { top: 50%; left: 0; transform: translateY(-50%); }
@@ -75,28 +95,41 @@
   .action-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: clamp(6px, 1.5vw, 12px);
+    gap: clamp(8px, 1.8vw, 14px);
     margin-bottom: env(safe-area-inset-bottom, 10px);
     margin-right: clamp(8px, 2vw, 20px);
   }
   .action-btn {
-    width: clamp(54px, 10vw, 72px);
-    height: clamp(54px, 10vw, 72px);
+    width: clamp(58px, 10.5vw, 76px);
+    height: clamp(58px, 10.5vw, 76px);
     border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.3);
+    border: 1.5px solid rgba(255,255,255,0.4);
     display: flex; align-items: center; justify-content: center;
     font-size: clamp(10px, 2vw, 13px);
-    font-weight: bold;
-    color: rgba(255,255,255,0.7);
+    font-weight: 700;
+    color: rgba(255,255,255,0.95);
     pointer-events: auto;
     -webkit-tap-highlight-color: transparent;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.7);
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,0.25),
+      inset 0 -3px 6px rgba(0,0,0,0.45),
+      0 5px 12px rgba(0,0,0,0.5);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: transform 0.06s ease, box-shadow 0.1s ease;
   }
-  .action-btn.active { transform: scale(0.9); background-blend-mode: screen; }
-  .btn-light { background: rgba(66,136,255,0.2); border-color: rgba(66,136,255,0.5); }
-  .btn-heavy { background: rgba(255,66,66,0.2); border-color: rgba(255,66,66,0.5); }
-  .btn-special { background: rgba(255,204,0,0.2); border-color: rgba(255,204,0,0.5); }
-  .btn-throw { background: rgba(0,200,100,0.2); border-color: rgba(0,200,100,0.5); }
-  .btn-guard { background: rgba(100,180,255,0.25); border-color: rgba(100,180,255,0.6); }
+  .action-btn.active {
+    transform: scale(0.92);
+    box-shadow:
+      inset 0 3px 8px rgba(0,0,0,0.55),
+      0 0 22px currentColor;
+  }
+  .btn-light  { background: radial-gradient(circle at 35% 30%, rgba(140,180,255,0.55), rgba(40,80,180,0.65) 70%); border-color: rgba(140,180,255,0.7); color:#bdd6ff; }
+  .btn-heavy  { background: radial-gradient(circle at 35% 30%, rgba(255,150,150,0.55), rgba(180,40,40,0.65) 70%); border-color: rgba(255,140,140,0.7); color:#ffcaca; }
+  .btn-special{ background: radial-gradient(circle at 35% 30%, rgba(255,230,140,0.6),  rgba(200,140,30,0.7) 70%); border-color: rgba(255,210,100,0.8); color:#fff0c8; }
+  .btn-throw  { background: radial-gradient(circle at 35% 30%, rgba(140,255,180,0.55), rgba(40,140,80,0.65) 70%); border-color: rgba(140,230,170,0.7); color:#c8ffd8; }
+  .btn-guard  { background: radial-gradient(circle at 35% 30%, rgba(160,210,255,0.6),  rgba(50,120,200,0.7) 70%); border-color: rgba(170,220,255,0.8); color:#d8eeff; }
   .action-buttons.three-col { grid-template-columns: 1fr 1fr 1fr; }
 
   /* Name input overlay */
@@ -104,46 +137,113 @@
     display: none;
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.85);
+    background: radial-gradient(ellipse at center, rgba(20,15,40,0.85) 0%, rgba(0,0,0,0.95) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     z-index: 100;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    animation: fadeIn 0.3s ease;
   }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   #nameOverlay.active { display: flex; }
+  #nameOverlay::before {
+    content: '';
+    position: absolute;
+    width: 480px; height: 380px;
+    border-radius: 20px;
+    background:
+      linear-gradient(135deg, rgba(40,30,70,0.55) 0%, rgba(20,18,40,0.6) 100%);
+    border: 1px solid rgba(255,210,120,0.25);
+    box-shadow:
+      0 20px 60px rgba(0,0,0,0.7),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    max-width: 90vw;
+    max-height: 80vh;
+  }
   #nameOverlay h2 {
-    color: #ffcc44;
-    font-size: clamp(20px, 4vw, 32px);
-    margin-bottom: 20px;
+    position: relative;
+    color: #ffcc55;
+    font-size: clamp(20px, 4vw, 30px);
+    margin-bottom: 24px;
+    text-shadow: 0 2px 12px rgba(255,180,80,0.5), 0 0 20px rgba(255,140,40,0.3);
+    letter-spacing: 0.05em;
+    font-weight: 700;
+  }
+  #nameOverlay h2::after {
+    content: '';
+    display: block;
+    width: 80px; height: 2px;
+    margin: 12px auto 0;
+    background: linear-gradient(90deg, transparent, #ffcc55, transparent);
   }
   #nameOverlay input {
-    background: #1a1a2e;
-    border: 2px solid #4488ff;
+    position: relative;
+    background: linear-gradient(180deg, rgba(15,12,28,0.8), rgba(8,8,18,0.8));
+    border: 1.5px solid rgba(120,160,230,0.55);
     color: #fff;
-    font-size: clamp(16px, 3vw, 24px);
-    padding: 10px 20px;
-    border-radius: 8px;
+    font-size: clamp(16px, 3vw, 22px);
+    padding: 14px 20px;
+    border-radius: 12px;
     text-align: center;
-    width: min(300px, 80vw);
+    width: min(320px, 80vw);
     outline: none;
+    box-shadow:
+      inset 0 2px 6px rgba(0,0,0,0.5),
+      0 0 0 0 rgba(255,200,80,0);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    letter-spacing: 0.05em;
   }
-  #nameOverlay input:focus { border-color: #ffcc44; }
+  #nameOverlay input:focus {
+    border-color: #ffcc55;
+    box-shadow:
+      inset 0 2px 6px rgba(0,0,0,0.5),
+      0 0 0 3px rgba(255,200,80,0.2),
+      0 0 24px rgba(255,180,60,0.3);
+  }
   #nameOverlay .name-hint {
-    color: #667;
-    font-size: clamp(12px, 2vw, 14px);
-    margin-top: 10px;
+    position: relative;
+    color: rgba(180,195,225,0.55);
+    font-size: clamp(11px, 2vw, 13px);
+    margin-top: 12px;
+    letter-spacing: 0.03em;
   }
   #nameOverlay button {
-    margin-top: 20px;
-    background: #4488ff;
-    color: #fff;
-    border: none;
-    padding: 12px 40px;
-    border-radius: 8px;
-    font-size: clamp(14px, 2.5vw, 18px);
+    position: relative;
+    margin-top: 24px;
+    background: linear-gradient(180deg, #ffd060 0%, #d88822 100%);
+    color: #2a1408;
+    border: 1px solid rgba(255,220,120,0.7);
+    padding: 13px 44px;
+    border-radius: 12px;
+    font-size: clamp(14px, 2.5vw, 17px);
+    font-weight: 700;
     cursor: pointer;
+    letter-spacing: 0.08em;
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,0.4),
+      inset 0 -2px 0 rgba(0,0,0,0.2),
+      0 6px 16px rgba(255,150,40,0.35),
+      0 0 0 0 rgba(255,200,80,0);
+    transition: transform 0.1s ease, box-shadow 0.2s ease;
   }
-  #nameOverlay button:hover { background: #5599ff; }
+  #nameOverlay button:hover {
+    background: linear-gradient(180deg, #ffe080 0%, #e89a32 100%);
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,0.5),
+      inset 0 -2px 0 rgba(0,0,0,0.2),
+      0 8px 22px rgba(255,150,40,0.55),
+      0 0 0 4px rgba(255,200,80,0.15);
+  }
+  #nameOverlay button:active {
+    transform: translateY(1px);
+    box-shadow:
+      inset 0 2px 4px rgba(0,0,0,0.3),
+      0 4px 10px rgba(255,150,40,0.3);
+  }
 </style>
 </head>
 <body>
